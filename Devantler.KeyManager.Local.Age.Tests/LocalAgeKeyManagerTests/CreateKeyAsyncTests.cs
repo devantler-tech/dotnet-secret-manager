@@ -1,15 +1,15 @@
-namespace Devantler.KeyManager.Local.AgeSOPS.Tests.LocalAgeSOPSKeyManagerTests;
+namespace Devantler.KeyManager.Local.Age.Tests.LocalAgeKeyManagerTests;
 
 /// <summary>
-/// Tests for <see cref="LocalAgeSOPSKeyManager.CreateKeyAsync"/>.
+/// Tests for <see cref="LocalAgeKeyManager.CreateKeyAsync(string, CancellationToken)"/>.
 /// </summary>
-[Collection("LocalAgeSOPSKeyManager")]
+[Collection("LocalAgeKeyManager")]
 public class CreateKeyAsyncTests
 {
-  readonly LocalAgeSOPSKeyManager keyManager = new();
+  readonly LocalAgeKeyManager keyManager = new();
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeSOPSKeyManager.CreateKeyAsync"/> creates a key in the SOPS key file when no out key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.CreateKeyAsync(CancellationToken)"/> creates a key in the SOPS key file when no out key path is provided.
   /// </summary>
   /// <returns></returns>
   [Fact]
@@ -27,7 +27,7 @@ public class CreateKeyAsyncTests
   }
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeSOPSKeyManager.CreateKeyAsync"/> creates a key in the specified key file when an out key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.CreateKeyAsync(string, CancellationToken)"/> creates a key in the specified key file when an out key path is provided.
   /// </summary>
   [Fact]
   public async Task CreateKeyAsync_GivenOutKeyPath_CreatesKeyInSpecifiedKeyFile()

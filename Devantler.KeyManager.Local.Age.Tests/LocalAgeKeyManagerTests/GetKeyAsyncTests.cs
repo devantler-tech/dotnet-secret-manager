@@ -1,15 +1,15 @@
-namespace Devantler.KeyManager.Local.AgeSOPS.Tests.LocalAgeSOPSKeyManagerTests;
+namespace Devantler.KeyManager.Local.Age.Tests.LocalAgeKeyManagerTests;
 
 /// <summary>
-/// Tests for <see cref="LocalAgeSOPSKeyManager.GetKeyAsync"/>.
+/// Tests for <see cref="LocalAgeKeyManager.GetKeyAsync(string, string?, CancellationToken)"/>.
 /// </summary>
-[Collection("LocalAgeSOPSKeyManager")]
+[Collection("LocalAgeKeyManager")]
 public class GetKeyAsyncTests
 {
-  readonly LocalAgeSOPSKeyManager keyManager = new();
+  readonly LocalAgeKeyManager keyManager = new();
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeSOPSKeyManager.GetKeyAsync"/> gets a key from the SOPS key file when no key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.GetKeyAsync(string, string?, CancellationToken)"/> gets a key from the SOPS key file when no key path is provided.
   /// </summary>
   /// <returns></returns>
   [Fact]
@@ -29,7 +29,7 @@ public class GetKeyAsyncTests
   }
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeSOPSKeyManager.GetKeyAsync"/> gets a key from the specified key file when a key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.GetKeyAsync(string, string?, CancellationToken)"/> gets a key from the specified key file when a key path is provided.
   /// </summary>
   [Fact]
   public async Task GetKeyAsync_GivenPublicKeyAndKeyPath_ReturnsKeyFromSpecifiedKeyFile()

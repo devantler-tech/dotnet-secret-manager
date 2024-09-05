@@ -1,15 +1,15 @@
-namespace Devantler.KeyManager.Local.AgeSOPS.Tests.LocalAgeSOPSKeyManagerTests;
+namespace Devantler.KeyManager.Local.Age.Tests.LocalAgeKeyManagerTests;
 
 /// <summary>
-/// Tests for <see cref="LocalAgeSOPSKeyManager.KeyExistsAsync"/>.
+/// Tests for <see cref="LocalAgeKeyManager.KeyExistsAsync(string, string, CancellationToken)"/>.
 /// </summary>
-[Collection("LocalAgeSOPSKeyManager")]
+[Collection("LocalAgeKeyManager")]
 public class KeyExistsAsyncTests
 {
-  readonly LocalAgeSOPSKeyManager keyManager = new();
+  readonly LocalAgeKeyManager keyManager = new();
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeSOPSKeyManager.KeyExistsAsync"/> returns true if a key exists in the SOPS key file when no key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.KeyExistsAsync(string, string, CancellationToken)"/> returns true if a key exists in the SOPS key file when no key path is provided.
   /// </summary>
   /// <returns></returns>
   [Fact]
@@ -29,7 +29,7 @@ public class KeyExistsAsyncTests
   }
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeSOPSKeyManager.KeyExistsAsync"/> returns true if a key exists in the specified key file when a key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.KeyExistsAsync(string, string, CancellationToken)"/> returns true if a key exists in the specified key file when a key path is provided.
   /// </summary>
   /// <returns></returns>
   [Fact]

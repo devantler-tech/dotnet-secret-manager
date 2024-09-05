@@ -1,17 +1,17 @@
 using Devantler.Keys.Age;
 
-namespace Devantler.KeyManager.Local.AgeSOPS.Tests.LocalAgeSOPSKeyManagerTests;
+namespace Devantler.KeyManager.Local.Age.Tests.LocalAgeKeyManagerTests;
 
 /// <summary>
-/// Tests for <see cref="LocalAgeSOPSKeyManager.DeleteKeyAsync(AgeKey, string?, CancellationToken)"/>.
+/// Tests for <see cref="LocalAgeKeyManager.DeleteKeyAsync(AgeKey, string?, CancellationToken)"/>.
 /// </summary>
-[Collection("LocalAgeSOPSKeyManager")]
+[Collection("LocalAgeKeyManager")]
 public class DeleteKeyAsyncTests
 {
-  readonly LocalAgeSOPSKeyManager keyManager = new();
+  readonly LocalAgeKeyManager keyManager = new();
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeSOPSKeyManager.DeleteKeyAsync(AgeKey, string?, CancellationToken)"/> deletes a key from the SOPS key file when no key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.DeleteKeyAsync(AgeKey, string?, CancellationToken)"/> deletes a key from the SOPS key file when no key path is provided.
   /// </summary>
   /// <returns></returns>
   [Fact]
@@ -29,7 +29,7 @@ public class DeleteKeyAsyncTests
   }
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeSOPSKeyManager.DeleteKeyAsync(AgeKey, string?, CancellationToken)"/> deletes a key from the specified key file when a key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.DeleteKeyAsync(AgeKey, string?, CancellationToken)"/> deletes a key from the specified key file when a key path is provided.
   /// </summary>
   /// <returns></returns>
   [Fact]
@@ -51,7 +51,7 @@ public class DeleteKeyAsyncTests
   }
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeSOPSKeyManager.DeleteKeyAsync(AgeKey, string?, CancellationToken)"/> deletes a key from the SOPS key file when no key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.DeleteKeyAsync(AgeKey, string?, CancellationToken)"/> deletes a key from the SOPS key file when no key path is provided.
   /// </summary>
   /// <returns></returns>
   [Fact]
@@ -69,7 +69,7 @@ public class DeleteKeyAsyncTests
   }
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeSOPSKeyManager.DeleteKeyAsync(AgeKey, string?, CancellationToken)"/> deletes a key from the specified key file when a key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.DeleteKeyAsync(AgeKey, string?, CancellationToken)"/> deletes a key from the specified key file when a key path is provided.
   /// </summary>
   /// <returns></returns>
   [Fact]

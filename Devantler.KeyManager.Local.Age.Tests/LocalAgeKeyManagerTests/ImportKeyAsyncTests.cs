@@ -1,18 +1,18 @@
 using Devantler.AgeCLI;
 using Devantler.Keys.Age;
 
-namespace Devantler.KeyManager.Local.AgeSOPS.Tests.LocalAgeSOPSKeyManagerTests;
+namespace Devantler.KeyManager.Local.Age.Tests.LocalAgeKeyManagerTests;
 
 /// <summary>
-/// Tests for <see cref="LocalAgeSOPSKeyManager.ImportKeyAsync(AgeKey, string?, CancellationToken)"/>.
+/// Tests for <see cref="LocalAgeKeyManager.ImportKeyAsync(AgeKey, string?, CancellationToken)"/>.
 /// </summary>
-[Collection("LocalAgeSOPSKeyManager")]
+[Collection("LocalAgeKeyManager")]
 public class ImportKeyAsyncTests
 {
-  readonly LocalAgeSOPSKeyManager keyManager = new();
+  readonly LocalAgeKeyManager keyManager = new();
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeSOPSKeyManager.ImportKeyAsync(AgeKey, string?, CancellationToken)"/> imports a key into the SOPS key file when no out key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.ImportKeyAsync(AgeKey, string?, CancellationToken)"/> imports a key into the SOPS key file when no out key path is provided.
   /// </summary>
   /// <returns></returns>
   [Fact]
@@ -33,7 +33,7 @@ public class ImportKeyAsyncTests
   }
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeSOPSKeyManager.ImportKeyAsync(AgeKey, string?, CancellationToken)"/> imports a key into the specified key file when an out key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.ImportKeyAsync(AgeKey, string?, CancellationToken)"/> imports a key into the specified key file when an out key path is provided.
   /// </summary>
   /// <returns></returns>
   [Fact]
@@ -55,7 +55,7 @@ public class ImportKeyAsyncTests
   }
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeSOPSKeyManager.ImportKeyAsync(AgeKey, string?, CancellationToken)"/> imports a key into the SOPS key file when no out key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.ImportKeyAsync(AgeKey, string?, CancellationToken)"/> imports a key into the SOPS key file when no out key path is provided.
   /// </summary>
   [Fact]
   public async Task ImportKeyAsync_GivenInKeyPathAndNoOutKeyPath_ImportsKeyIntoSOPSKeyFile()
@@ -78,7 +78,7 @@ public class ImportKeyAsyncTests
   }
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeSOPSKeyManager.ImportKeyAsync(AgeKey, string?, CancellationToken)"/> imports a key into the specified key file when an out key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.ImportKeyAsync(AgeKey, string?, CancellationToken)"/> imports a key into the specified key file when an out key path is provided.
   /// </summary>
   /// <returns></returns>
   [Fact]
@@ -104,7 +104,7 @@ public class ImportKeyAsyncTests
   }
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeSOPSKeyManager.ImportKeyAsync(AgeKey, string?, CancellationToken)"/> imports a key into the SOPS key file when no out key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.ImportKeyAsync(AgeKey, string?, CancellationToken)"/> imports a key into the SOPS key file when no out key path is provided.
   /// </summary>
   /// <returns></returns>
   [Fact]
@@ -117,9 +117,9 @@ public class ImportKeyAsyncTests
     await File.AppendAllLinesAsync(inKeyPath, [inKey1.ToString(), inKey2.ToString()]);
 
     // Act
-    var outKey1 = await keyManager.ImportKeyAsync(inKeyPath, inKey1.PublicKey);
+    var outKey1 = await keyManager.ImportKeyAsync(inKeyPath, inKeyPublicKey: inKey1.PublicKey);
     var outKeyFromFile1 = await keyManager.GetKeyAsync(inKey1.PublicKey);
-    var outKey2 = await keyManager.ImportKeyAsync(inKeyPath, inKey2.PublicKey);
+    var outKey2 = await keyManager.ImportKeyAsync(inKeyPath, inKeyPublicKey: inKey2.PublicKey);
     var outKeyFromFile2 = await keyManager.GetKeyAsync(inKey2.PublicKey);
 
     // Assert

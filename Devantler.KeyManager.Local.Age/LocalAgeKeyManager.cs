@@ -3,24 +3,27 @@ using Devantler.KeyManager.Core;
 using Devantler.AgeCLI;
 using System.Runtime.InteropServices;
 
-namespace Devantler.KeyManager.Local.AgeSOPS;
+namespace Devantler.KeyManager.Local.Age;
 
 /// <summary>
 /// A local key manager for SOPS with Age keys.
 /// </summary>
-public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
+public class LocalAgeKeyManager() : ILocalKeyManager<AgeKey>
 {
   readonly string _sopsAgeKeyFile = GetSOPSAgeKeyFilePath();
 
+  /// <summary>
+  /// Create a new key, and add it to the default key file.
+  /// </summary>
+  /// <param name="token"></param>
+  /// <returns><see cref="AgeKey"/></returns>
+  public async Task<AgeKey> CreateKeyAsync(CancellationToken token = default) => await CreateKeyAsync(_sopsAgeKeyFile, token).ConfigureAwait(false);
+
   /// <inheritdoc/>
-  public async Task<AgeKey> CreateKeyAsync(string? outKeyPath = default, CancellationToken token = default)
+  public async Task<AgeKey> CreateKeyAsync(string outKeyPath, CancellationToken token = default)
   {
     // Create a new Age key.
     var key = await AgeKeygen.InMemory(token).ConfigureAwait(false);
-
-    // Set the default key path if none is provided.
-    if (string.IsNullOrWhiteSpace(outKeyPath))
-      outKeyPath = _sopsAgeKeyFile;
 
     // Create the directory if it does not exist.
     string? directory = Path.GetDirectoryName(outKeyPath);
@@ -41,14 +44,18 @@ public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
     return key;
   }
 
+  /// <summary>
+  /// Delete a key from the default key file.
+  /// </summary>
+  /// <param name="key"></param>
+  /// <param name="token"></param>
+  /// <returns><see cref="AgeKey"/></returns>
+  public async Task<AgeKey> DeleteKeyAsync(AgeKey key, CancellationToken token = default) => await DeleteKeyAsync(key, _sopsAgeKeyFile, token).ConfigureAwait(false);
+
   /// <inheritdoc/>
-  public async Task<AgeKey> DeleteKeyAsync(AgeKey key, string? keyPath = null, CancellationToken token = default)
+  public async Task<AgeKey> DeleteKeyAsync(AgeKey key, string keyPath, CancellationToken token = default)
   {
     ArgumentNullException.ThrowIfNull(key);
-
-    // Set the default key path if none is provided.
-    if (string.IsNullOrWhiteSpace(keyPath))
-      keyPath = _sopsAgeKeyFile;
 
     // Delete the key from the file.
     string fileContents = await File.ReadAllTextAsync(keyPath, token).ConfigureAwait(false);
@@ -63,13 +70,17 @@ public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
     return key;
   }
 
-  /// <inheritdoc/>
-  public async Task<AgeKey> DeleteKeyAsync(string publicKey, string? keyPath = null, CancellationToken token = default)
-  {
-    // Set the default key path if none is provided.
-    if (string.IsNullOrWhiteSpace(keyPath))
-      keyPath = _sopsAgeKeyFile;
+  /// <summary>
+  /// Delete a key by public key from the default key file.
+  /// </summary>
+  /// <param name="publicKey"></param>
+  /// <param name="token"></param>
+  /// <returns><see cref="AgeKey"/></returns>
+  public async Task<AgeKey> DeleteKeyAsync(string publicKey, CancellationToken token = default) => await DeleteKeyAsync(publicKey, _sopsAgeKeyFile, token).ConfigureAwait(false);
 
+  /// <inheritdoc/>
+  public async Task<AgeKey> DeleteKeyAsync(string publicKey, string keyPath, CancellationToken token = default)
+  {
     // Get the contents of the file.
     string fileContents = await File.ReadAllTextAsync(keyPath, token).ConfigureAwait(false);
 
@@ -96,13 +107,17 @@ public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
     return key;
   }
 
-  /// <inheritdoc/>
-  public async Task<AgeKey> GetKeyAsync(string publicKey, string? keyPath = null, CancellationToken token = default)
-  {
-    // Set the default key path if none is provided.
-    if (string.IsNullOrWhiteSpace(keyPath))
-      keyPath = _sopsAgeKeyFile;
+  /// <summary>
+  /// Get a key by public key from the default key file.
+  /// </summary>
+  /// <param name="publicKey"></param>
+  /// <param name="token"></param>
+  /// <returns><see cref="AgeKey"/></returns>
+  public async Task<AgeKey> GetKeyAsync(string publicKey, CancellationToken token = default) => await GetKeyAsync(publicKey, _sopsAgeKeyFile, token).ConfigureAwait(false);
 
+  /// <inheritdoc/>
+  public async Task<AgeKey> GetKeyAsync(string publicKey, string keyPath, CancellationToken token = default)
+  {
     // Get the contents of the file.
     string fileContents = await File.ReadAllTextAsync(keyPath, token).ConfigureAwait(false);
 
@@ -121,8 +136,16 @@ public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
     return new AgeKey(rawKey);
   }
 
+  /// <summary>
+  /// Import a key from a Key object to the default key file.
+  /// </summary>
+  /// <param name="inKey"></param>
+  /// <param name="token"></param>
+  /// <returns><see cref="AgeKey"/></returns>
+  public async Task<AgeKey> ImportKeyAsync(AgeKey inKey, CancellationToken token = default) => await ImportKeyAsync(inKey, _sopsAgeKeyFile, token).ConfigureAwait(false);
+
   /// <inheritdoc/>
-  public async Task<AgeKey> ImportKeyAsync(AgeKey inKey, string? outKeyPath = null, CancellationToken token = default)
+  public async Task<AgeKey> ImportKeyAsync(AgeKey inKey, string outKeyPath, CancellationToken token = default)
   {
     ArgumentNullException.ThrowIfNull(inKey);
 
@@ -149,8 +172,17 @@ public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
     return inKey;
   }
 
+  /// <summary>
+  /// Import a key from a file to the default key file.
+  /// </summary>
+  /// <param name="inKeyPath"></param>
+  /// <param name="inKeyPublicKey"></param>
+  /// <param name="token"></param>
+  /// <returns><see cref="AgeKey"/></returns>
+  public async Task<AgeKey> ImportKeyAsync(string inKeyPath, string? inKeyPublicKey = null, CancellationToken token = default) => await ImportKeyAsync(inKeyPath, _sopsAgeKeyFile, inKeyPublicKey, token).ConfigureAwait(false);
+
   /// <inheritdoc/>
-  public async Task<AgeKey> ImportKeyAsync(string inKeyPath, string? inKeyPublicKey = null, string? outKeyPath = null, CancellationToken token = default)
+  public async Task<AgeKey> ImportKeyAsync(string inKeyPath, string outKeyPath, string? inKeyPublicKey = null, CancellationToken token = default)
   {
     // Read the key from the in key path.
     string inKeyfileContents = await File.ReadAllTextAsync(inKeyPath, token).ConfigureAwait(false);
@@ -174,10 +206,6 @@ public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
     // Parse the key
     var inKey = new AgeKey(rawInKey);
 
-    // Set the default key path if none is provided.
-    if (string.IsNullOrWhiteSpace(outKeyPath))
-      outKeyPath = _sopsAgeKeyFile;
-
     // Read the key from the out key path.
     string outKeyfileContents = await File.ReadAllTextAsync(outKeyPath, token).ConfigureAwait(false);
 
@@ -189,13 +217,17 @@ public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
 
   }
 
-  /// <inheritdoc/>
-  public async Task<bool> KeyExistsAsync(string publicKey, string? keyPath = null, CancellationToken token = default)
-  {
-    // Set the default key path if none is provided.
-    if (string.IsNullOrWhiteSpace(keyPath))
-      keyPath = _sopsAgeKeyFile;
+  /// <summary>
+  /// Check if a key exists in the default key file.
+  /// </summary>
+  /// <param name="publicKey"></param>
+  /// <param name="token"></param>
+  /// <returns><see cref="bool"/></returns>
+  public async Task<bool> KeyExistsAsync(string publicKey, CancellationToken token = default) => await KeyExistsAsync(publicKey, _sopsAgeKeyFile, token).ConfigureAwait(false);
 
+  /// <inheritdoc/>
+  public async Task<bool> KeyExistsAsync(string publicKey, string keyPath, CancellationToken token = default)
+  {
     // Get the contents of the file.
     string fileContents = await File.ReadAllTextAsync(keyPath, token).ConfigureAwait(false);
 
@@ -203,13 +235,16 @@ public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
     return fileContents.Contains("# public key: " + publicKey, StringComparison.Ordinal);
   }
 
-  /// <inheritdoc/>
-  public async Task<IEnumerable<AgeKey>> ListKeysAsync(string? keyPath = null, CancellationToken token = default)
-  {
-    // Set the default key path if none is provided.
-    if (string.IsNullOrWhiteSpace(keyPath))
-      keyPath = _sopsAgeKeyFile;
+  /// <summary>
+  /// List all keys from the default key file.
+  /// </summary>
+  /// <param name="token"></param>
+  /// <returns><see cref="IEnumerable{AgeKey}"/></returns>
+  public async Task<IEnumerable<AgeKey>> ListKeysAsync(CancellationToken token = default) => await ListKeysAsync(_sopsAgeKeyFile, token).ConfigureAwait(false);
 
+  /// <inheritdoc/>
+  public async Task<IEnumerable<AgeKey>> ListKeysAsync(string keyPath, CancellationToken token = default)
+  {
     // Get the contents of the file.
     string fileContents = await File.ReadAllTextAsync(keyPath, token).ConfigureAwait(false);
 
