@@ -149,10 +149,6 @@ public class LocalAgeKeyManager() : ILocalKeyManager<AgeKey>
   {
     ArgumentNullException.ThrowIfNull(inKey);
 
-    // Set the default key path if none is provided.
-    if (string.IsNullOrWhiteSpace(outKeyPath))
-      outKeyPath = _sopsAgeKeyFile;
-
     // Create the directory if it does not exist.
     string? directory = Path.GetDirectoryName(outKeyPath);
     if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
