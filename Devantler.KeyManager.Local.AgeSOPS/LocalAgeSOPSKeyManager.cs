@@ -36,7 +36,7 @@ public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
     // Append the key to the file if it does not exist.
     string fileContents = await File.ReadAllTextAsync(outKeyPath, token).ConfigureAwait(false);
     if (!fileContents.Contains(key.ToString(), StringComparison.Ordinal))
-      await File.AppendAllTextAsync(outKeyPath, key.ToString(), token).ConfigureAwait(false);
+      await File.AppendAllTextAsync(outKeyPath, key.ToString() + Environment.NewLine, token).ConfigureAwait(false);
 
     return key;
   }
@@ -55,6 +55,8 @@ public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
     if (fileContents.Contains(key.ToString(), StringComparison.Ordinal))
     {
       fileContents = fileContents.Replace(key.ToString(), "", StringComparison.Ordinal);
+      if (fileContents.EndsWith(Environment.NewLine, StringComparison.Ordinal))
+        fileContents = fileContents[..^Environment.NewLine.Length];
       await File.WriteAllTextAsync(keyPath, fileContents, token).ConfigureAwait(false);
     }
 
@@ -75,19 +77,21 @@ public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
     string[] lines = fileContents.Split(Environment.NewLine);
     int lineNumber = Array.IndexOf(lines, "# public key: " + publicKey);
     //Get the line above and below the public key
-    string createAtLine = lines[lineNumber - 1];
+    string createdAtLine = lines[lineNumber - 1];
     string publicKeyLine = lines[lineNumber];
     string privateKeyLine = lines[lineNumber + 1];
 
     // Put the lines back together
-    string rawKey = createAtLine + Environment.NewLine + publicKeyLine + Environment.NewLine + privateKeyLine;
+    string rawKey = createdAtLine + Environment.NewLine + publicKeyLine + Environment.NewLine + privateKeyLine;
 
     // Parse the key
     var key = new AgeKey(rawKey);
 
     // Remove the key from the file including the new line characters
-    _ = fileContents.Replace(rawKey, "", StringComparison.Ordinal);
-    _ = fileContents.Replace(Environment.NewLine + Environment.NewLine, Environment.NewLine, StringComparison.Ordinal);
+    fileContents = fileContents.Replace(rawKey, "", StringComparison.Ordinal);
+    if (fileContents.EndsWith(Environment.NewLine, StringComparison.Ordinal))
+      fileContents = fileContents[..^Environment.NewLine.Length];
+    await File.WriteAllTextAsync(keyPath, fileContents, token).ConfigureAwait(false);
 
     return key;
   }
@@ -106,12 +110,12 @@ public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
     string[] lines = fileContents.Split(Environment.NewLine);
     int lineNumber = Array.IndexOf(lines, "# public key: " + publicKey);
     //Get the line above and below the public key
-    string createAtLine = lines[lineNumber - 1];
+    string createdAtLine = lines[lineNumber - 1];
     string publicKeyLine = lines[lineNumber];
     string privateKeyLine = lines[lineNumber + 1];
 
     // Put the lines back together
-    string rawKey = createAtLine + Environment.NewLine + publicKeyLine + Environment.NewLine + privateKeyLine;
+    string rawKey = createdAtLine + Environment.NewLine + publicKeyLine + Environment.NewLine + privateKeyLine;
 
     // Parse the key
     return new AgeKey(rawKey);
@@ -153,14 +157,19 @@ public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
 
     // Find the line number with the public key
     string[] lines = inKeyfileContents.Split(Environment.NewLine);
+    if (string.IsNullOrWhiteSpace(inKeyPublicKey) && lines.Length > 3)
+      throw new InvalidOperationException("The public key must be provided if the key file contains more than one key.");
+    else if (string.IsNullOrWhiteSpace(inKeyPublicKey))
+      inKeyPublicKey = lines[1].Replace("# public key: ", "", StringComparison.Ordinal);
+
     int lineNumber = Array.IndexOf(lines, "# public key: " + inKeyPublicKey);
     //Get the line above and below the public key
-    string createAtLine = lines[lineNumber - 1];
+    string createdAtLine = lines[lineNumber - 1];
     string publicKeyLine = lines[lineNumber];
     string privateKeyLine = lines[lineNumber + 1];
 
     // Put the lines back together
-    string rawInKey = createAtLine + Environment.NewLine + publicKeyLine + Environment.NewLine + privateKeyLine;
+    string rawInKey = createdAtLine + Environment.NewLine + publicKeyLine + Environment.NewLine + privateKeyLine;
 
     // Parse the key
     var inKey = new AgeKey(rawInKey);
@@ -174,7 +183,7 @@ public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
 
     // Append the key to the file if it does not exist.
     if (!outKeyfileContents.Contains(inKey.ToString(), StringComparison.Ordinal))
-      await File.AppendAllTextAsync(outKeyPath, inKey.ToString(), token).ConfigureAwait(false);
+      await File.AppendAllTextAsync(outKeyPath, inKey.ToString() + Environment.NewLine, token).ConfigureAwait(false);
 
     return inKey;
 
@@ -211,12 +220,12 @@ public class LocalAgeSOPSKeyManager() : IKeyManager<AgeKey>
     {
       if (lines[i].StartsWith("# created: ", StringComparison.Ordinal))
       {
-        string createAtLine = lines[i];
+        string createdAtLine = lines[i];
         string publicKeyLine = lines[i + 1];
         string privateKeyLine = lines[i + 2];
 
         // Put the lines back together
-        string rawKey = createAtLine + Environment.NewLine + publicKeyLine + Environment.NewLine + privateKeyLine;
+        string rawKey = createdAtLine + Environment.NewLine + publicKeyLine + Environment.NewLine + privateKeyLine;
 
         // Parse the key
         keys.Add(new AgeKey(rawKey));

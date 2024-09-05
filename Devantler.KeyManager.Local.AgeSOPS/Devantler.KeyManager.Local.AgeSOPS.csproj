@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Devantler.Keys.Age" Version="0.0.4" />
-    <PackageReference Include="Devantler.AgeCLI" Version="1.1.0" />
+    <PackageReference Include="Devantler.Keys.Age" Version="0.0.7" />
+    <PackageReference Include="Devantler.AgeCLI" Version="1.1.9" />
   </ItemGroup>
 
   <ItemGroup>
