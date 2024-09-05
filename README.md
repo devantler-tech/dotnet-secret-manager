@@ -12,18 +12,6 @@ A simple .NET library to manage cryptographic keys.
 <!-- readme-tree start -->
 
 ```
-.
-├── .github
-│   └── workflows
-├── Devantler.Keys.Age
-│   └── Utils
-├── Devantler.Keys.Age.Tests
-│   ├── AgeKeyTests
-│   └── Utils
-│       └── DateTimeFormatterTests
-└── Devantler.Keys.Core
-
-9 directories
 ```
 
 <!-- readme-tree end -->
