@@ -10,10 +10,17 @@ A simple .NET library to manage cryptographic keys.
   <summary>Show/hide folder structure</summary>
 
 <!-- readme-tree start -->
-
 ```
-```
+.
+├── .github
+│   └── workflows
+├── Devantler.KeyManager.Core
+├── Devantler.KeyManager.Local.Age
+└── Devantler.KeyManager.Local.Age.Tests
+    └── LocalAgeKeyManagerTests
 
+6 directories
+```
 <!-- readme-tree end -->
 
 </details>
