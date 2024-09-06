@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Devantler.AgeCLI" Version="1.1.22" GeneratePathProperty="true" />
+    <PackageReference Include="Devantler.AgeCLI" Version="1.1.23" GeneratePathProperty="true" />
     <PackageReference Include="Devantler.Keys.Age" Version="0.0.9" />
   </ItemGroup>
 
@@ -21,11 +21,7 @@
 
   <ItemGroup>
     <Content Include="assets/**" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" PackagePath="assets/" />
-    <None Include="$(PkgDevantler_AgeCLI)/runtimes/*/native/*">
-      <Link>%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
+    <Content Include="$(PkgDevantler_AgeCLI)/runtimes/**" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Link="%(Filename)%(Extension)" />
   </ItemGroup>
 
 </Project>
