@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="assets/**" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Pack="true" PackagePath="assets/**" />
-    <Content Include="runtimes/*/native/*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Pack="true" PackagePath="runtimes/*/native/" />
+    <Content Include="assets/**" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Pack="true" PackagePath="assets/" />
+    <Content Include="runtimes/*/native/*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Pack="true" PackagePath="runtimes/" />
   </ItemGroup>
 
   <ItemGroup>
