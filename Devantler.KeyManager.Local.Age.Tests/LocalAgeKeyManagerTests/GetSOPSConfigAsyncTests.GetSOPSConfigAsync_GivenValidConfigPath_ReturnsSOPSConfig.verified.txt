@@ -1,0 +1,11 @@
+﻿{
+  CreationRules: [
+    {
+      PathRegex: .sops.yaml,
+      EncryptedRegex: ^(data|stringData)$,
+      Age:
+public-key,
+public-key
+    }
+  ]
+}

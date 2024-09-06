@@ -1,0 +1,8 @@
+creation_rules:
+- path_regex: k8s\/clusters\/{{ name }}\/.+\.sops\.yaml$
+  encrypted_regex: ^(data|stringData)$
+  age: {{ public_key }}
+- path_regex: .sops.yaml$
+  encrypted_regex: ^(data|stringData)$
+  age: |-
+    {{ public_key }}
