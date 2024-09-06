@@ -271,6 +271,23 @@ public class LocalAgeKeyManager() : ILocalKeyManager<AgeKey>
     return keys;
   }
 
+  /// <inheritdoc/>
+  public async Task<SOPSConfig> GetSOPSConfigAsync(string configPath, CancellationToken token = default)
+  {
+    string configContents = await File.ReadAllTextAsync(configPath, token).ConfigureAwait(false);
+    var config = YAMLDeserializer.Deserialize<SOPSConfig>(configContents);
+    return config;
+  }
+
+  /// <inheritdoc/>
+  public async Task CreateSOPSConfigAsync(string configPath, SOPSConfig config, bool overwrite = false, CancellationToken token = default)
+  {
+    if (overwrite && File.Exists(configPath))
+      File.Delete(configPath);
+    string configRaw = YAMLSerializer.Serialize(config);
+    await File.WriteAllTextAsync(configPath, configRaw, token).ConfigureAwait(false);
+  }
+
   /// <summary>
   /// Get the path to the SOPS_AGE_KEY_FILE or the default path for the current OS.
   /// </summary>
@@ -302,22 +319,5 @@ public class LocalAgeKeyManager() : ILocalKeyManager<AgeKey>
       sopsAgeKeyFile = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/sops/age/keys.txt";
     }
     return sopsAgeKeyFile;
-  }
-
-  /// <inheritdoc/>
-  public async Task<SOPSConfig> GetSOPSConfigAsync(string configPath, CancellationToken token = default)
-  {
-    string configContents = await File.ReadAllTextAsync(configPath, token).ConfigureAwait(false);
-    var config = YAMLDeserializer.Deserialize<SOPSConfig>(configContents);
-    return config;
-  }
-
-  /// <inheritdoc/>
-  public async Task CreateSOPSConfigAsync(string configPath, SOPSConfig config, bool overwrite = false, CancellationToken token = default)
-  {
-    if (overwrite && File.Exists(configPath))
-      File.Delete(configPath);
-    string configRaw = YAMLSerializer.Serialize(config);
-    await File.WriteAllTextAsync(configPath, configRaw, token).ConfigureAwait(false);
   }
 }
