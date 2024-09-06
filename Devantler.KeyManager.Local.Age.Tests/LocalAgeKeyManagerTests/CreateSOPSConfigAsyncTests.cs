@@ -10,11 +10,11 @@ public class GenerateSOPSConfigAsyncTests
   readonly LocalAgeKeyManager keyManager = new();
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeKeyManager.CreateKeyAsync(CancellationToken)"/> creates a key in the SOPS key file when no out key path is provided.
+  /// Tests that <see cref="LocalAgeKeyManager.CreateSOPSConfigAsync(string, SOPSConfig, bool, CancellationToken)"/> creates a new SOPS config file when the file does not exist.
   /// </summary>
   /// <returns></returns>
   [Fact]
-  public async Task GenerateSOPSConfigAsync_GivenNewConfigPathAndValidSOPSConfig_CreatesNewConfigFile()
+  public async Task CreateSOPSConfigAsync_GivenNewConfigPathAndValidSOPSConfig_CreatesNewConfigFile()
   {
     // Arrange
     string configPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
@@ -31,11 +31,51 @@ public class GenerateSOPSConfigAsyncTests
     };
 
     // Act
-    await keyManager.CreateSOPSConfigAsync(configPath, sopsConfig, true);
+    await keyManager.CreateSOPSConfigAsync(configPath, sopsConfig);
     string configFromFile = await File.ReadAllTextAsync(configPath);
 
     // Assert
     _ = await Verify(configFromFile);
+
+    // Cleanup
+    File.Delete(configPath);
+  }
+
+  /// <summary>
+  /// Tests that <see cref="LocalAgeKeyManager.CreateSOPSConfigAsync(string, SOPSConfig, bool, CancellationToken)"/> overwrites an existing SOPS config file when the file exists and overwrite is true.
+  /// </summary>
+  [Fact]
+  public async Task CreateSOPSConfigAsync_GivenExistingConfigPathAndValidSOPSConfigAndOverwriteTrue_OverwritesExistingConfigFile()
+  {
+    // Arrange
+    string configPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+    SOPSConfig sopsConfig = new()
+    {
+      CreationRules =
+      [
+        new SOPSConfigCreationRule{
+          PathRegex = ".sops.yaml",
+          EncryptedRegex = "^(data|stringData)$",
+          Age = $"public-key,{Environment.NewLine}public-key"
+        }
+      ]
+    };
+
+    // Act
+    await keyManager.CreateSOPSConfigAsync(configPath, sopsConfig);
+    string configFromFile = await File.ReadAllTextAsync(configPath);
+    sopsConfig.CreationRules.Add(new SOPSConfigCreationRule
+    {
+      PathRegex = ".sops.yaml",
+      EncryptedRegex = "^(data|stringData)$",
+      Age = $"public-key,{Environment.NewLine}public-key"
+    });
+    await keyManager.CreateSOPSConfigAsync(configPath, sopsConfig, true);
+    string configFromFileAfterOverwrite = await File.ReadAllTextAsync(configPath);
+
+    // Assert
+    Assert.NotEqual(configFromFile, configFromFileAfterOverwrite);
+    _ = await Verify($"{configFromFile}{Environment.NewLine}{configFromFileAfterOverwrite}");
 
     // Cleanup
     File.Delete(configPath);
