@@ -11,15 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Devantler.AgeCLI" Version="1.1.14">
-      <PrivateAssets>analyzers;build</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Devantler.AgeCLI" Version="1.1.15" />
     <PackageReference Include="Devantler.Keys.Age" Version="0.0.9" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="assets/**" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Pack="true" PackagePath="assets/" />
-    <Content Include="runtimes/*/native/*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Pack="true" PackagePath="runtimes/" />
+    <Content Include="assets/**" CopyToOutputDirectory="PreserveNewest" PackagePath="assets/" />
+    <Content Include="runtimes/*/native/*" CopyToOutputDirectory="PreserveNewest" PackagePath="runtimes/" />
   </ItemGroup>
 
   <ItemGroup>
