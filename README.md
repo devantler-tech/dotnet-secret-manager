@@ -15,11 +15,15 @@ A simple .NET library to manage cryptographic keys.
 ├── .github
 │   └── workflows
 ├── Devantler.KeyManager.Core
+│   └── Models
 ├── Devantler.KeyManager.Local.Age
+│   └── assets
+│       └── templates
+│           └── sops
 └── Devantler.KeyManager.Local.Age.Tests
     └── LocalAgeKeyManagerTests
 
-6 directories
+10 directories
 ```
 <!-- readme-tree end -->
 
