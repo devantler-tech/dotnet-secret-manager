@@ -80,4 +80,38 @@ public class GenerateSOPSConfigAsyncTests
     // Cleanup
     File.Delete(configPath);
   }
+
+  /// <summary>
+  /// Tests that <see cref="LocalAgeKeyManager.CreateSOPSConfigAsync(string, SOPSConfig, bool, CancellationToken)"/> creates directories when the directory does not exist.
+  /// </summary>
+  [Fact]
+  public async Task CreateSOPSConfigAsync_GivenNewConfigPathWithNonExistentDirectoryAndValidSOPSConfig_CreatesDirectoryAndConfigFile()
+  {
+    // Arrange
+    string tempPath = Path.GetTempPath();
+    string directoryPath = Path.Combine(tempPath, "first-dir", "second-dir");
+    string configPath = Path.Combine(directoryPath, Path.GetRandomFileName());
+    SOPSConfig sopsConfig = new()
+    {
+      CreationRules =
+      [
+        new SOPSConfigCreationRule{
+          PathRegex = ".sops.yaml",
+          EncryptedRegex = "^(data|stringData)$",
+          Age = $"public-key,{Environment.NewLine}public-key"
+        }
+      ]
+    };
+
+    // Act
+    await keyManager.CreateSOPSConfigAsync(configPath, sopsConfig);
+    string configFromFile = await File.ReadAllTextAsync(configPath);
+
+    // Assert
+    Assert.True(Directory.Exists(directoryPath));
+    _ = await Verify(configFromFile);
+
+    // Cleanup
+    Directory.Delete(directoryPath, true);
+  }
 }

@@ -284,6 +284,12 @@ public class LocalAgeKeyManager() : ILocalKeyManager<AgeKey>
   {
     if (overwrite && File.Exists(configPath))
       File.Delete(configPath);
+
+    // Create the directory if it does not exist.
+    string? directory = Path.GetDirectoryName(configPath);
+    if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+      _ = Directory.CreateDirectory(directory);
+
     string configRaw = YAMLSerializer.Serialize(config);
     await File.WriteAllTextAsync(configPath, configRaw, token).ConfigureAwait(false);
   }
