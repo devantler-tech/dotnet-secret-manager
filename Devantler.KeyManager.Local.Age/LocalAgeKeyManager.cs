@@ -2,6 +2,9 @@ using Devantler.Keys.Age;
 using Devantler.KeyManager.Core;
 using Devantler.AgeCLI;
 using System.Runtime.InteropServices;
+using Devantler.KeyManager.Core.Models;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Devantler.KeyManager.Local.Age;
 
@@ -11,6 +14,8 @@ namespace Devantler.KeyManager.Local.Age;
 public class LocalAgeKeyManager() : ILocalKeyManager<AgeKey>
 {
   readonly string _sopsAgeKeyFile = GetSOPSAgeKeyFilePath();
+  IDeserializer YAMLDeserializer { get; } = new DeserializerBuilder().WithNamingConvention(UnderscoredNamingConvention.Instance).Build();
+  ISerializer YAMLSerializer { get; } = new SerializerBuilder().WithNamingConvention(UnderscoredNamingConvention.Instance).Build();
 
   /// <summary>
   /// Create a new key, and add it to the default key file.
@@ -297,5 +302,22 @@ public class LocalAgeKeyManager() : ILocalKeyManager<AgeKey>
       sopsAgeKeyFile = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/sops/age/keys.txt";
     }
     return sopsAgeKeyFile;
+  }
+
+  /// <inheritdoc/>
+  public async Task<SOPSConfig> GetSOPSConfigAsync(string configPath, CancellationToken token = default)
+  {
+    string configContents = await File.ReadAllTextAsync(configPath, token).ConfigureAwait(false);
+    var config = YAMLDeserializer.Deserialize<SOPSConfig>(configContents);
+    return config;
+  }
+
+  /// <inheritdoc/>
+  public async Task CreateSOPSConfigAsync(string configPath, SOPSConfig config, bool overwrite = false, CancellationToken token = default)
+  {
+    if (overwrite && File.Exists(configPath))
+      File.Delete(configPath);
+    string configRaw = YAMLSerializer.Serialize(config);
+    await File.WriteAllTextAsync(configPath, configRaw, token).ConfigureAwait(false);
   }
 }

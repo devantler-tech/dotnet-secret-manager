@@ -11,7 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Devantler.Keys.Core" Version="0.0.7" />
+    <PackageReference Include="Devantler.Keys.Core" Version="0.0.9" />
+    <PackageReference Include="YAMLDotNet" Version="16.1.0" />
   </ItemGroup>
 
 </Project>

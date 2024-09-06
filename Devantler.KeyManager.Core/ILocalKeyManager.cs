@@ -1,3 +1,4 @@
+using Devantler.KeyManager.Core.Models;
 using Devantler.Keys.Core;
 
 namespace Devantler.KeyManager.Core;
@@ -77,4 +78,21 @@ public interface ILocalKeyManager<T> : IKeyManager<T> where T : IKey
   /// <param name="token"></param>
   /// <returns>A <see cref="bool"/> indicating whether the key exists or not.</returns>
   Task<bool> KeyExistsAsync(string publicKey, string keyPath, CancellationToken token = default);
+
+  /// <summary>
+  /// Get a .sops.yaml file.
+  /// </summary>
+  /// <param name="configPath"></param>
+  /// <param name="token"></param>
+  /// <returns><see cref="SOPSConfig"/></returns>
+  Task<SOPSConfig> GetSOPSConfigAsync(string configPath, CancellationToken token = default);
+
+  /// <summary>
+  /// Creates a .sops.yaml file.
+  /// </summary>
+  /// <param name="configPath"></param>
+  /// <param name="config"></param>
+  /// <param name="overwrite"></param>
+  /// <param name="token"></param>
+  Task CreateSOPSConfigAsync(string configPath, SOPSConfig config, bool overwrite = false, CancellationToken token = default);
 }
