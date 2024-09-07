@@ -17,13 +17,10 @@ A simple .NET library to manage cryptographic keys.
 ├── Devantler.KeyManager.Core
 │   └── Models
 ├── Devantler.KeyManager.Local.Age
-│   └── assets
-│       └── templates
-│           └── sops
 └── Devantler.KeyManager.Local.Age.Tests
     └── LocalAgeKeyManagerTests
 
-10 directories
+7 directories
 ```
 <!-- readme-tree end -->
 
