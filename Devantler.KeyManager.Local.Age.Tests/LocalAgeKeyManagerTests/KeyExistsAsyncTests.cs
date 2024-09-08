@@ -6,7 +6,7 @@ namespace Devantler.KeyManager.Local.Age.Tests.LocalAgeKeyManagerTests;
 [Collection("LocalAgeKeyManager")]
 public class KeyExistsAsyncTests
 {
-  readonly LocalAgeKeyManager keyManager = new();
+  readonly LocalAgeKeyManager _keyManager = new();
 
   /// <summary>
   /// Tests that <see cref="LocalAgeKeyManager.KeyExistsAsync(string, string, CancellationToken)"/> returns true if a key exists in the SOPS key file when no key path is provided.
@@ -16,16 +16,16 @@ public class KeyExistsAsyncTests
   public async Task KeyExistsAsync_GivenPublicKeyAndNoKeyPath_ReturnsTrueIfKeyExistsInSOPSKeyFile()
   {
     // Arrange
-    var key = await keyManager.CreateKeyAsync();
+    var key = await _keyManager.CreateKeyAsync();
 
     // Act
-    bool keyExists = await keyManager.KeyExistsAsync(key.PublicKey);
+    bool keyExists = await _keyManager.KeyExistsAsync(key.PublicKey);
 
     // Assert
     Assert.True(keyExists);
 
     // Cleanup
-    _ = await keyManager.DeleteKeyAsync(key);
+    _ = await _keyManager.DeleteKeyAsync(key);
   }
 
   /// <summary>
@@ -37,10 +37,10 @@ public class KeyExistsAsyncTests
   {
     // Arrange
     string outKeyPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-    var key = await keyManager.CreateKeyAsync(outKeyPath);
+    var key = await _keyManager.CreateKeyAsync(outKeyPath);
 
     // Act
-    bool keyExists = await keyManager.KeyExistsAsync(key.PublicKey, outKeyPath);
+    bool keyExists = await _keyManager.KeyExistsAsync(key.PublicKey, outKeyPath);
 
     // Assert
     Assert.True(keyExists);

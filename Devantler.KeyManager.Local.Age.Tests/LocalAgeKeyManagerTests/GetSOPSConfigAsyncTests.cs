@@ -8,7 +8,7 @@ namespace Devantler.KeyManager.Local.Age.Tests.LocalAgeKeyManagerTests;
 [Collection("LocalAgeKeyManager")]
 public class GetSOPSConfigAsyncTests
 {
-  readonly LocalAgeKeyManager keyManager = new();
+  readonly LocalAgeKeyManager _keyManager = new();
 
   /// <summary>
   /// Tests that <see cref="LocalAgeKeyManager.GetSOPSConfigAsync(string, CancellationToken)"/> returns the SOPS config from the file.
@@ -30,10 +30,10 @@ public class GetSOPSConfigAsyncTests
         }
       ]
     };
-    await keyManager.CreateSOPSConfigAsync(configPath, sopsConfig, true);
+    await _keyManager.CreateSOPSConfigAsync(configPath, sopsConfig, true);
 
     // Act
-    var result = await keyManager.GetSOPSConfigAsync(configPath);
+    var result = await _keyManager.GetSOPSConfigAsync(configPath);
 
     // Assert
     _ = await Verify(result);

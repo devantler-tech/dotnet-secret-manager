@@ -8,7 +8,7 @@ namespace Devantler.KeyManager.Local.Age.Tests.LocalAgeKeyManagerTests;
 [Collection("LocalAgeKeyManager")]
 public class DeleteKeyAsyncTests
 {
-  readonly LocalAgeKeyManager keyManager = new();
+  readonly LocalAgeKeyManager _keyManager = new();
 
   /// <summary>
   /// Tests that <see cref="LocalAgeKeyManager.DeleteKeyAsync(AgeKey, string?, CancellationToken)"/> deletes a key from the SOPS key file when no key path is provided.
@@ -18,11 +18,11 @@ public class DeleteKeyAsyncTests
   public async Task DeleteKeyAsync_GivenKeyAndNoKeyPath_DeletesKeyFromSOPSKeyFile()
   {
     // Arrange
-    var key = await keyManager.CreateKeyAsync();
+    var key = await _keyManager.CreateKeyAsync();
 
     // Act
-    _ = await keyManager.DeleteKeyAsync(key);
-    bool keyExists = await keyManager.KeyExistsAsync(key.PublicKey);
+    _ = await _keyManager.DeleteKeyAsync(key);
+    bool keyExists = await _keyManager.KeyExistsAsync(key.PublicKey);
 
     // Assert
     Assert.False(keyExists);
@@ -37,11 +37,11 @@ public class DeleteKeyAsyncTests
   {
     // Arrange
     string outKeyPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-    var key = await keyManager.CreateKeyAsync(outKeyPath);
+    var key = await _keyManager.CreateKeyAsync(outKeyPath);
 
     // Act
-    _ = await keyManager.DeleteKeyAsync(key, outKeyPath);
-    bool keyExists = await keyManager.KeyExistsAsync(key.PublicKey, outKeyPath);
+    _ = await _keyManager.DeleteKeyAsync(key, outKeyPath);
+    bool keyExists = await _keyManager.KeyExistsAsync(key.PublicKey, outKeyPath);
 
     // Assert
     Assert.False(keyExists);
@@ -58,11 +58,11 @@ public class DeleteKeyAsyncTests
   public async Task DeleteKeyAsync_GivenPublicKeyAndNoKeyPath_DeletesKeyFromSOPSKeyFile()
   {
     // Arrange
-    var key = await keyManager.CreateKeyAsync();
+    var key = await _keyManager.CreateKeyAsync();
 
     // Act
-    _ = await keyManager.DeleteKeyAsync(key.PublicKey);
-    bool keyExists = await keyManager.KeyExistsAsync(key.PublicKey);
+    _ = await _keyManager.DeleteKeyAsync(key.PublicKey);
+    bool keyExists = await _keyManager.KeyExistsAsync(key.PublicKey);
 
     // Assert
     Assert.False(keyExists);
@@ -77,11 +77,11 @@ public class DeleteKeyAsyncTests
   {
     // Arrange
     string outKeyPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-    var key = await keyManager.CreateKeyAsync(outKeyPath);
+    var key = await _keyManager.CreateKeyAsync(outKeyPath);
 
     // Act
-    _ = await keyManager.DeleteKeyAsync(key.PublicKey, outKeyPath);
-    bool keyExists = await keyManager.KeyExistsAsync(key.PublicKey, outKeyPath);
+    _ = await _keyManager.DeleteKeyAsync(key.PublicKey, outKeyPath);
+    bool keyExists = await _keyManager.KeyExistsAsync(key.PublicKey, outKeyPath);
 
     // Assert
     Assert.False(keyExists);

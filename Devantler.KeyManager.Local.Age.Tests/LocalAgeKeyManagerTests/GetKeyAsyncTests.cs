@@ -6,7 +6,7 @@ namespace Devantler.KeyManager.Local.Age.Tests.LocalAgeKeyManagerTests;
 [Collection("LocalAgeKeyManager")]
 public class GetKeyAsyncTests
 {
-  readonly LocalAgeKeyManager keyManager = new();
+  readonly LocalAgeKeyManager _keyManager = new();
 
   /// <summary>
   /// Tests that <see cref="LocalAgeKeyManager.GetKeyAsync(string, string?, CancellationToken)"/> gets a key from the SOPS key file when no key path is provided.
@@ -16,16 +16,16 @@ public class GetKeyAsyncTests
   public async Task GetKeyAsync_GivenPublicKeyAndNoKeyPath_ReturnsKeyFromSOPSKeyFile()
   {
     // Arrange
-    var key = await keyManager.CreateKeyAsync();
+    var key = await _keyManager.CreateKeyAsync();
 
     // Act
-    var keyFromFile = await keyManager.GetKeyAsync(key.PublicKey);
+    var keyFromFile = await _keyManager.GetKeyAsync(key.PublicKey);
 
     // Assert
     Assert.Equal(key.ToString(), keyFromFile.ToString());
 
     // Cleanup
-    _ = await keyManager.DeleteKeyAsync(key);
+    _ = await _keyManager.DeleteKeyAsync(key);
   }
 
   /// <summary>
@@ -36,10 +36,10 @@ public class GetKeyAsyncTests
   {
     // Arrange
     string outKeyPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-    var key = await keyManager.CreateKeyAsync(outKeyPath);
+    var key = await _keyManager.CreateKeyAsync(outKeyPath);
 
     // Act
-    var keyFromFile = await keyManager.GetKeyAsync(key.PublicKey, outKeyPath);
+    var keyFromFile = await _keyManager.GetKeyAsync(key.PublicKey, outKeyPath);
 
     // Assert
     Assert.Equal(key.ToString(), keyFromFile.ToString());

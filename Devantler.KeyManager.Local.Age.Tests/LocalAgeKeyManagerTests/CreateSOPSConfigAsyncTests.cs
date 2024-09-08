@@ -7,7 +7,7 @@ namespace Devantler.KeyManager.Local.Age.Tests.LocalAgeKeyManagerTests;
 [Collection("LocalAgeKeyManager")]
 public class GenerateSOPSConfigAsyncTests
 {
-  readonly LocalAgeKeyManager keyManager = new();
+  readonly LocalAgeKeyManager _keyManager = new();
 
   /// <summary>
   /// Tests that <see cref="LocalAgeKeyManager.CreateSOPSConfigAsync(string, SOPSConfig, bool, CancellationToken)"/> creates a new SOPS config file when the file does not exist.
@@ -32,7 +32,7 @@ public class GenerateSOPSConfigAsyncTests
     };
 
     // Act
-    await keyManager.CreateSOPSConfigAsync(configPath, sopsConfig);
+    await _keyManager.CreateSOPSConfigAsync(configPath, sopsConfig);
     string configFromFile = await File.ReadAllTextAsync(configPath);
 
     // Assert
@@ -64,7 +64,7 @@ public class GenerateSOPSConfigAsyncTests
     };
 
     // Act
-    await keyManager.CreateSOPSConfigAsync(configPath, sopsConfig);
+    await _keyManager.CreateSOPSConfigAsync(configPath, sopsConfig);
     string configFromFile = await File.ReadAllTextAsync(configPath);
     sopsConfig.CreationRules.Add(new SOPSConfigCreationRule
     {
@@ -72,7 +72,7 @@ public class GenerateSOPSConfigAsyncTests
       EncryptedRegex = "^(data|stringData)$",
       Age = $"public-key,{Environment.NewLine}public-key"
     });
-    await keyManager.CreateSOPSConfigAsync(configPath, sopsConfig, true);
+    await _keyManager.CreateSOPSConfigAsync(configPath, sopsConfig, true);
     string configFromFileAfterOverwrite = await File.ReadAllTextAsync(configPath);
 
     // Assert
@@ -107,7 +107,7 @@ public class GenerateSOPSConfigAsyncTests
     };
 
     // Act
-    await keyManager.CreateSOPSConfigAsync(configPath, sopsConfig);
+    await _keyManager.CreateSOPSConfigAsync(configPath, sopsConfig);
     string configFromFile = await File.ReadAllTextAsync(configPath);
 
     // Assert

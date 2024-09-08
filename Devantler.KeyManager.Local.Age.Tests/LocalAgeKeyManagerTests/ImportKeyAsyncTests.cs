@@ -9,7 +9,7 @@ namespace Devantler.KeyManager.Local.Age.Tests.LocalAgeKeyManagerTests;
 [Collection("LocalAgeKeyManager")]
 public class ImportKeyAsyncTests
 {
-  readonly LocalAgeKeyManager keyManager = new();
+  readonly LocalAgeKeyManager _keyManager = new();
 
   /// <summary>
   /// Tests that <see cref="LocalAgeKeyManager.ImportKeyAsync(AgeKey, string?, CancellationToken)"/> imports a key into the SOPS key file when no out key path is provided.
@@ -22,14 +22,14 @@ public class ImportKeyAsyncTests
     var inKey = await AgeKeygen.InMemory();
 
     // Act
-    var outKey = await keyManager.ImportKeyAsync(inKey);
-    var outKeyFromFile = await keyManager.GetKeyAsync(outKey.PublicKey);
+    var outKey = await _keyManager.ImportKeyAsync(inKey);
+    var outKeyFromFile = await _keyManager.GetKeyAsync(outKey.PublicKey);
 
     // Assert
     Assert.Equal(inKey.ToString(), outKeyFromFile.ToString());
 
     // Cleanup
-    _ = await keyManager.DeleteKeyAsync(inKey);
+    _ = await _keyManager.DeleteKeyAsync(inKey);
   }
 
   /// <summary>
@@ -44,8 +44,8 @@ public class ImportKeyAsyncTests
     string outKeyPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
     // Act
-    var outKey = await keyManager.ImportKeyAsync(inKey, outKeyPath);
-    var outKeyFromFile = await keyManager.GetKeyAsync(outKey.PublicKey, outKeyPath);
+    var outKey = await _keyManager.ImportKeyAsync(inKey, outKeyPath);
+    var outKeyFromFile = await _keyManager.GetKeyAsync(outKey.PublicKey, outKeyPath);
 
     // Assert
     Assert.Equal(inKey.ToString(), outKeyFromFile.ToString());
@@ -66,14 +66,14 @@ public class ImportKeyAsyncTests
     await File.WriteAllTextAsync(inKeyPath, inKey.ToString());
 
     // Act
-    var outKey = await keyManager.ImportKeyAsync(inKeyPath);
-    var outKeyFromFile = await keyManager.GetKeyAsync(outKey.PublicKey);
+    var outKey = await _keyManager.ImportKeyAsync(inKeyPath);
+    var outKeyFromFile = await _keyManager.GetKeyAsync(outKey.PublicKey);
 
     // Assert
     Assert.Equal(inKey.ToString(), outKeyFromFile.ToString());
 
     // Cleanup
-    _ = await keyManager.DeleteKeyAsync(outKey);
+    _ = await _keyManager.DeleteKeyAsync(outKey);
     File.Delete(inKeyPath);
   }
 
@@ -92,8 +92,8 @@ public class ImportKeyAsyncTests
     await File.WriteAllTextAsync(outKeyPath, "");
 
     // Act
-    var outKey = await keyManager.ImportKeyAsync(inKeyPath, outKeyPath: outKeyPath);
-    var outKeyFromFile = await keyManager.GetKeyAsync(outKey.PublicKey, outKeyPath);
+    var outKey = await _keyManager.ImportKeyAsync(inKeyPath, outKeyPath: outKeyPath);
+    var outKeyFromFile = await _keyManager.GetKeyAsync(outKey.PublicKey, outKeyPath);
 
     // Assert
     Assert.Equal(inKey.ToString(), outKeyFromFile.ToString());
@@ -117,18 +117,18 @@ public class ImportKeyAsyncTests
     await File.AppendAllLinesAsync(inKeyPath, [inKey1.ToString(), inKey2.ToString()]);
 
     // Act
-    var outKey1 = await keyManager.ImportKeyAsync(inKeyPath, inKeyPublicKey: inKey1.PublicKey);
-    var outKeyFromFile1 = await keyManager.GetKeyAsync(inKey1.PublicKey);
-    var outKey2 = await keyManager.ImportKeyAsync(inKeyPath, inKeyPublicKey: inKey2.PublicKey);
-    var outKeyFromFile2 = await keyManager.GetKeyAsync(inKey2.PublicKey);
+    var outKey1 = await _keyManager.ImportKeyAsync(inKeyPath, inKeyPublicKey: inKey1.PublicKey);
+    var outKeyFromFile1 = await _keyManager.GetKeyAsync(inKey1.PublicKey);
+    var outKey2 = await _keyManager.ImportKeyAsync(inKeyPath, inKeyPublicKey: inKey2.PublicKey);
+    var outKeyFromFile2 = await _keyManager.GetKeyAsync(inKey2.PublicKey);
 
     // Assert
     Assert.Equal(inKey1.ToString(), outKeyFromFile1.ToString());
     Assert.Equal(inKey2.ToString(), outKeyFromFile2.ToString());
 
     // Cleanup
-    _ = await keyManager.DeleteKeyAsync(outKey1);
-    _ = await keyManager.DeleteKeyAsync(outKey2);
+    _ = await _keyManager.DeleteKeyAsync(outKey1);
+    _ = await _keyManager.DeleteKeyAsync(outKey2);
     File.Delete(inKeyPath);
   }
 }
