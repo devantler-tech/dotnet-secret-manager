@@ -22,7 +22,8 @@ public class GenerateSOPSConfigAsyncTests
     {
       CreationRules =
       [
-        new SOPSConfigCreationRule{
+        new SOPSConfigCreationRule
+        {
           PathRegex = ".sops.yaml",
           EncryptedRegex = "^(data|stringData)$",
           Age = $"public-key,{Environment.NewLine}public-key"
@@ -53,7 +54,8 @@ public class GenerateSOPSConfigAsyncTests
     {
       CreationRules =
       [
-        new SOPSConfigCreationRule{
+        new SOPSConfigCreationRule
+        {
           PathRegex = ".sops.yaml",
           EncryptedRegex = "^(data|stringData)$",
           Age = $"public-key,{Environment.NewLine}public-key"
@@ -95,7 +97,8 @@ public class GenerateSOPSConfigAsyncTests
     {
       CreationRules =
       [
-        new SOPSConfigCreationRule{
+        new SOPSConfigCreationRule
+        {
           PathRegex = ".sops.yaml",
           EncryptedRegex = "^(data|stringData)$",
           Age = $"public-key,{Environment.NewLine}public-key"
