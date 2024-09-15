@@ -13,5 +13,3 @@ public class SOPSConfig
   /// </summary>
   public required Collection<SOPSConfigCreationRule> CreationRules { get; set; } = [];
 }
-
-
