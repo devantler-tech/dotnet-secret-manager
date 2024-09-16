@@ -283,7 +283,7 @@ public class LocalAgeKeyManager() : ILocalKeyManager<AgeKey>
   public async Task CreateSOPSConfigAsync(string configPath, SOPSConfig config, bool overwrite = false, CancellationToken cancellationToken = default)
   {
     if (!overwrite && File.Exists(configPath))
-      return;
+      throw new InvalidOperationException("The file already exists and overwrite is set to false.");
 
     // Create the directory if it does not exist.
     string? directory = Path.GetDirectoryName(configPath);
