@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Devantler.AgeCLI" Version="1.1.26" GeneratePathProperty="true" />
-    <PackageReference Include="Devantler.Keys.Age" Version="0.0.11" />
+    <PackageReference Include="Devantler.Keys.Age" Version="0.0.12" />
   </ItemGroup>
 
   <ItemGroup>
