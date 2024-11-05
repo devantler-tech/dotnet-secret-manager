@@ -45,7 +45,7 @@ If you need to create a new implementation for a key manager, you can install th
 dotnet add package Devantler.Keys.Core
 ```
 
-## Usage
+## 📝 Usage
 
 ### Local Age Key Manager
 
