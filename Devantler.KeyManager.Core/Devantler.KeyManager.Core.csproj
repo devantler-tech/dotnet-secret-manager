@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Devantler.Keys.Core" Version="0.0.14" />
-    <PackageReference Include="YAMLDotNet" Version="16.1.3" />
+    <PackageReference Include="YAMLDotNet" Version="16.2.0" />
   </ItemGroup>
 
 </Project>
