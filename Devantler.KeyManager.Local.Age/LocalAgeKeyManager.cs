@@ -246,7 +246,9 @@ public class LocalAgeKeyManager() : ILocalKeyManager<AgeKey>
   /// <inheritdoc/>
   public async Task<IEnumerable<AgeKey>> ListKeysAsync(string keyPath, CancellationToken cancellationToken = default)
   {
-    // Get the contents of the file.
+    if (!File.Exists(keyPath))
+      return [];
+
     string fileContents = await File.ReadAllTextAsync(keyPath, cancellationToken).ConfigureAwait(false);
 
     // Find the line number with the public key
