@@ -126,6 +126,9 @@ public class LocalAgeKeyManager() : ILocalKeyManager<AgeKey>
     // Get the contents of the file.
     string fileContents = await File.ReadAllTextAsync(keyPath, cancellationToken).ConfigureAwait(false);
 
+    if (!fileContents.Contains("# public key: " + publicKey, StringComparison.Ordinal))
+      throw new KeyManagerException("the key does not exist in the key file.");
+
     // Find the line number with the public key
     string[] lines = fileContents.Split(Environment.NewLine);
     int lineNumber = Array.IndexOf(lines, "# public key: " + publicKey);
