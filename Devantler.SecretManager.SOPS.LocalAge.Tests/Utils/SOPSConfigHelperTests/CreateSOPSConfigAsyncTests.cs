@@ -15,7 +15,7 @@ public class CreateSOPSConfigAsyncTests
   /// </summary>
   /// <returns></returns>
   [Fact]
-  public async Task CreateSOPSConfigAsync_GivenNewConfigPathAndValidSOPSConfig_CreatesNewConfigFile()
+  public async Task CreateSOPSConfigAsync_CreatesNewConfigFile()
   {
     // Arrange
     string configPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
@@ -47,7 +47,7 @@ public class CreateSOPSConfigAsyncTests
   /// Tests that <see cref="SOPSConfigHelper.CreateSOPSConfigAsync(string, SOPSConfig, bool, CancellationToken)"/> overwrites an existing SOPS config file when the file exists and overwrite is true.
   /// </summary>
   [Fact]
-  public async Task CreateSOPSConfigAsync_GivenExistingConfigPathAndValidSOPSConfigAndOverwriteTrue_OverwritesExistingConfigFile()
+  public async Task CreateSOPSConfigAsync_OverwritesExistingConfigFile()
   {
     // Arrange
     string configPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
@@ -88,7 +88,7 @@ public class CreateSOPSConfigAsyncTests
   /// Tests that <see cref="SOPSConfigHelper.CreateSOPSConfigAsync(string, SOPSConfig, bool, CancellationToken)"/> creates directories when the directory does not exist.
   /// </summary>
   [Fact]
-  public async Task CreateSOPSConfigAsync_GivenNewConfigPathWithNonExistentDirectoryAndValidSOPSConfig_CreatesDirectoryAndConfigFile()
+  public async Task CreateSOPSConfigAsync_CreatesDirectoryAndConfigFile()
   {
     // Arrange
     string tempPath = Path.GetTempPath();
