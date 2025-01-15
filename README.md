@@ -1,8 +1,8 @@
-# 🔓 .NET Key Manager
+# 🔓 .NET Secret Manager
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Test](https://github.com/devantler/dotnet-key-manager/actions/workflows/test.yaml/badge.svg)](https://github.com/devantler/dotnet-key-manager/actions/workflows/test.yaml)
-[![codecov](https://codecov.io/gh/devantler/dotnet-key-manager/graph/badge.svg?token=RhQPb4fE7z)](https://codecov.io/gh/devantler/dotnet-key-manager)
+[![Test](https://github.com/devantler/dotnet-secret-manager/actions/workflows/test.yaml/badge.svg)](https://github.com/devantler/dotnet-secret-manager/actions/workflows/test.yaml)
+[![codecov](https://codecov.io/gh/devantler/dotnet-secret-manager/graph/badge.svg?token=RhQPb4fE7z)](https://codecov.io/gh/devantler/dotnet-secret-manager)
 
 A simple .NET library to manage cryptographic keys.
 
@@ -14,11 +14,11 @@ A simple .NET library to manage cryptographic keys.
 .
 ├── .github
 │   └── workflows
-├── Devantler.KeyManager.Core
+├── Devantler.SecretManager.
 │   └── Models
-├── Devantler.KeyManager.Local.Age
-└── Devantler.KeyManager.Local.Age.Tests
-    └── LocalAgeKeyManagerTests
+├── Devantler.SecretManager.SOPS.LocalAge
+└── Devantler.SecretManager.SOPS.LocalAge.Tests
+    └── SOPSLocalAgeSecretManagerTests
 
 7 directories
 ```
@@ -36,10 +36,10 @@ To get started, you can install the packages from NuGet.
 
 ```bash
 # For the Age key model
-dotnet add package Devantler.KeyManager.Local.Age
+dotnet add package Devantler.SecretManager.SOPS.LocalAge
 ```
 
-If you need to create a new implementation for a key manager, you can install the core package.
+If you need to create a new implementation for a secret manager, you can install the core package.
 
 ```bash
 dotnet add package Devantler.Keys.Core
@@ -47,32 +47,32 @@ dotnet add package Devantler.Keys.Core
 
 ## 📝 Usage
 
-### Local Age Key Manager
+### Local Age Secret Manager
 
-The Local Age Key Manager is a simple key manager to manage Age keys on your local machine. The key manager saves and loads keys from your SOPS keyring by default.
+The Local Age Secret Manager is a simple secret manager to manage Age keys on your local machine. The secret manager saves and loads keys from your SOPS keyring by default.
 
 #### Create a new key
 
 To create a new key, you can use the `CreateKeyAsync` method.
 
 ```csharp
-using Devantler.KeyManager.Local.Age;
+using Devantler.SecretManager.SOPS.LocalAge;
 
-var keyManager = new LocalAgeKeyManager();
+var SecretManager = new SOPSLocalAgeSecretManager();
 
-var key = await keyManager.CreateKeyAsync();
+var key = await SecretManager.CreateKeyAsync();
 ```
 
 To delete a key, you can use the `DeleteKeyAsync` method.
 
 ```csharp
 using Devantler.Keys.Age;
-using Devantler.KeyManager.Local.Age;
+using Devantler.SecretManager.SOPS.LocalAge;
 
-var keyManager = new LocalAgeKeyManager();
+var SecretManager = new SOPSLocalAgeSecretManager();
 
 var ageKey = AgeKeygen.InMemory();
-await keyManager.DeleteKeyAsync(ageKey);
+await SecretManager.DeleteKeyAsync(ageKey);
 ```
 
 #### Get an existing key
@@ -80,11 +80,11 @@ await keyManager.DeleteKeyAsync(ageKey);
 To get an existing key, you can use the `GetKeyAsync` method.
 
 ```csharp
-using Devantler.KeyManager.Local.Age;
+using Devantler.SecretManager.SOPS.LocalAge;
 
-var keyManager = new LocalAgeKeyManager();
+var SecretManager = new SOPSLocalAgeSecretManager();
 
-var key = await keyManager.GetKeyAsync("<public key>");
+var key = await SecretManager.GetKeyAsync("<public key>");
 ```
 
 #### Import a key
@@ -93,13 +93,13 @@ To import a key, you can use the `ImportKeyAsync` method.
 
 ```csharp
 using Devantler.Keys.Age;
-using Devantler.KeyManager.Local.Age;
+using Devantler.SecretManager.SOPS.LocalAge;
 
-var keyManager = new LocalAgeKeyManager();
+var SecretManager = new SOPSLocalAgeSecretManager();
 
 var ageKey = AgeKeygen.InMemory();
 
-var key = await keyManager.ImportKeyAsync(ageKey);
+var key = await SecretManager.ImportKeyAsync(ageKey);
 ```
 
 #### Check if a key exists
@@ -107,11 +107,11 @@ var key = await keyManager.ImportKeyAsync(ageKey);
 To check if a key exists, you can use the `KeyExistsAsync` method.
 
 ```csharp
-using Devantler.KeyManager.Local.Age;
+using Devantler.SecretManager.SOPS.LocalAge;
 
-var keyManager = new LocalAgeKeyManager();
+var SecretManager = new SOPSLocalAgeSecretManager();
 
-var exists = await keyManager.KeyExistsAsync("<public key>");
+var exists = await SecretManager.KeyExistsAsync("<public key>");
 ```
 
 #### List all keys
@@ -119,9 +119,9 @@ var exists = await keyManager.KeyExistsAsync("<public key>");
 To list all keys, you can use the `ListKeysAsync` method.
 
 ```csharp
-using Devantler.KeyManager.Local.Age;
+using Devantler.SecretManager.SOPS.LocalAge;
 
-var keyManager = new LocalAgeKeyManager();
+var SecretManager = new SOPSLocalAgeSecretManager();
 
-var keys = await keyManager.ListKeysAsync();
+var keys = await SecretManager.ListKeysAsync();
 ```

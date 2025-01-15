@@ -1,7 +1,6 @@
-#pragma warning disable CA2227
 using System.Collections.ObjectModel;
 
-namespace Devantler.KeyManager.Core.Models;
+namespace Devantler.SecretManager.SOPS.LocalAge.Models;
 
 /// <summary>
 /// Represents a .sops.yaml file.

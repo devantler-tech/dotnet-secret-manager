@@ -1,6 +1,0 @@
-﻿creation_rules:
-- path_regex: .sops.yaml
-  encrypted_regex: ^(data|stringData)$
-  age: |-
-    public-key,
-    public-key

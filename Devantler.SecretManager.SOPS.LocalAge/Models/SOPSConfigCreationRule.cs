@@ -1,7 +1,7 @@
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 
-namespace Devantler.KeyManager.Core.Models;
+namespace Devantler.SecretManager.SOPS.LocalAge.Models;
 
 /// <summary>
 /// Represents a Creation Rule in a .sops.yaml file.
