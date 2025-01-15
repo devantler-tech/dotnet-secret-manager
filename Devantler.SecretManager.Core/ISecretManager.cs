@@ -1,28 +1,19 @@
 using Devantler.Keys.Core;
 
-namespace Devantler.KeyManager.Core;
+namespace Devantler.SecretManager.Core;
 
 /// <summary>
-/// Interface for a key manager.
+/// Interface for a secret manager.
 /// </summary>
-public interface IKeyManager<T> where T : IKey
+public interface ISecretManager<T> where T : IKey
 {
   /// <summary>
   /// Import a key from a Key object.
   /// </summary>
-  /// <param name="inKey"></param>
+  /// <param name="key"></param>
   /// <param name="cancellationToken"></param>
   /// <returns>The imported <see cref="IKey"/>.</returns>
-  Task<T> ImportKeyAsync(T inKey, CancellationToken cancellationToken = default);
-
-  /// <summary>
-  /// Import a key from a file.
-  /// </summary>
-  /// <param name="inKeyPath"></param>
-  /// <param name="inKeyPublicKey"></param>
-  /// <param name="cancellationToken"></param>
-  /// <returns>The imported <see cref="IKey"/>.</returns>
-  Task<T> ImportKeyAsync(string inKeyPath, string? inKeyPublicKey = default, CancellationToken cancellationToken = default);
+  Task<T> ImportKeyAsync(T key, CancellationToken cancellationToken = default);
 
   /// <summary>
   /// Create a new key.

@@ -1,20 +1,21 @@
-using Devantler.KeyManager.Core.Models;
+using Devantler.SecretManager.SOPS.LocalAge.Models;
+using Devantler.SecretManager.SOPS.LocalAge.Utils;
 
-namespace Devantler.KeyManager.Local.Age.Tests.LocalAgeKeyManagerTests;
+namespace Devantler.SecretManager.SOPS.LocalAge.Tests.Utils.SOPSConfigHelperTests;
 /// <summary>
-/// Tests for <see cref="LocalAgeKeyManager.CreateSOPSConfigAsync(string, SOPSConfig, bool, CancellationToken)"/>.
+/// Tests for <see cref="SOPSConfigHelper.CreateSOPSConfigAsync(string, SOPSConfig, bool, CancellationToken)"/>.
 /// </summary>
-[Collection("LocalAgeKeyManager")]
-public class GenerateSOPSConfigAsyncTests
+[Collection("SOPSLocalAgeSecretManager")]
+public class CreateSOPSConfigAsyncTests
 {
-  readonly LocalAgeKeyManager _keyManager = new();
+  readonly SOPSConfigHelper _sopsConfigHelper = new();
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeKeyManager.CreateSOPSConfigAsync(string, SOPSConfig, bool, CancellationToken)"/> creates a new SOPS config file when the file does not exist.
+  /// Tests that <see cref="SOPSConfigHelper.CreateSOPSConfigAsync(string, SOPSConfig, bool, CancellationToken)"/> creates a new SOPS config file when the file does not exist.
   /// </summary>
   /// <returns></returns>
   [Fact]
-  public async Task CreateSOPSConfigAsync_GivenNewConfigPathAndValidSOPSConfig_CreatesNewConfigFile()
+  public async Task CreateSOPSConfigAsync_CreatesNewConfigFile()
   {
     // Arrange
     string configPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
@@ -32,7 +33,7 @@ public class GenerateSOPSConfigAsyncTests
     };
 
     // Act
-    await _keyManager.CreateSOPSConfigAsync(configPath, sopsConfig);
+    await _sopsConfigHelper.CreateSOPSConfigAsync(configPath, sopsConfig);
     string configFromFile = await File.ReadAllTextAsync(configPath);
 
     // Assert
@@ -43,10 +44,10 @@ public class GenerateSOPSConfigAsyncTests
   }
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeKeyManager.CreateSOPSConfigAsync(string, SOPSConfig, bool, CancellationToken)"/> overwrites an existing SOPS config file when the file exists and overwrite is true.
+  /// Tests that <see cref="SOPSConfigHelper.CreateSOPSConfigAsync(string, SOPSConfig, bool, CancellationToken)"/> overwrites an existing SOPS config file when the file exists and overwrite is true.
   /// </summary>
   [Fact]
-  public async Task CreateSOPSConfigAsync_GivenExistingConfigPathAndValidSOPSConfigAndOverwriteTrue_OverwritesExistingConfigFile()
+  public async Task CreateSOPSConfigAsync_OverwritesExistingConfigFile()
   {
     // Arrange
     string configPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
@@ -64,7 +65,7 @@ public class GenerateSOPSConfigAsyncTests
     };
 
     // Act
-    await _keyManager.CreateSOPSConfigAsync(configPath, sopsConfig);
+    await _sopsConfigHelper.CreateSOPSConfigAsync(configPath, sopsConfig);
     string configFromFile = await File.ReadAllTextAsync(configPath);
     sopsConfig.CreationRules.Add(new SOPSConfigCreationRule
     {
@@ -72,7 +73,7 @@ public class GenerateSOPSConfigAsyncTests
       EncryptedRegex = "^(data|stringData)$",
       Age = $"public-key,{Environment.NewLine}public-key"
     });
-    await _keyManager.CreateSOPSConfigAsync(configPath, sopsConfig, true);
+    await _sopsConfigHelper.CreateSOPSConfigAsync(configPath, sopsConfig, true);
     string configFromFileAfterOverwrite = await File.ReadAllTextAsync(configPath);
 
     // Assert
@@ -84,10 +85,10 @@ public class GenerateSOPSConfigAsyncTests
   }
 
   /// <summary>
-  /// Tests that <see cref="LocalAgeKeyManager.CreateSOPSConfigAsync(string, SOPSConfig, bool, CancellationToken)"/> creates directories when the directory does not exist.
+  /// Tests that <see cref="SOPSConfigHelper.CreateSOPSConfigAsync(string, SOPSConfig, bool, CancellationToken)"/> creates directories when the directory does not exist.
   /// </summary>
   [Fact]
-  public async Task CreateSOPSConfigAsync_GivenNewConfigPathWithNonExistentDirectoryAndValidSOPSConfig_CreatesDirectoryAndConfigFile()
+  public async Task CreateSOPSConfigAsync_CreatesDirectoryAndConfigFile()
   {
     // Arrange
     string tempPath = Path.GetTempPath();
@@ -107,7 +108,7 @@ public class GenerateSOPSConfigAsyncTests
     };
 
     // Act
-    await _keyManager.CreateSOPSConfigAsync(configPath, sopsConfig);
+    await _sopsConfigHelper.CreateSOPSConfigAsync(configPath, sopsConfig);
     string configFromFile = await File.ReadAllTextAsync(configPath);
 
     // Assert
