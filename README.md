@@ -14,13 +14,16 @@ A simple .NET library to manage cryptographic keys.
 .
 ├── .github
 │   └── workflows
-├── Devantler.SecretManager.
-│   └── Models
+├── Devantler.SecretManager.Core
 ├── Devantler.SecretManager.SOPS.LocalAge
+│   ├── Models
+│   └── Utils
 └── Devantler.SecretManager.SOPS.LocalAge.Tests
-    └── SOPSLocalAgeSecretManagerTests
+    ├── SOPSLocalAgeSecretManagerTests
+    └── Utils
+        └── SOPSConfigHelperTests
 
-7 directories
+11 directories
 ```
 <!-- readme-tree end -->
 
