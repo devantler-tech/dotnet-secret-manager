@@ -60,4 +60,21 @@ public interface ISecretManager<T> where T : IKey
   /// <param name="cancellationToken"></param>
   /// <returns>A <see cref="bool"/> indicating whether the key exists or not.</returns>
   Task<bool> KeyExistsAsync(string publicKey, CancellationToken cancellationToken = default);
+
+  /// <summary>
+  /// Encrypt a file.
+  /// </summary>
+  /// <param name="filePath"></param>
+  /// <param name="publicKey"></param>
+  /// <param name="cancellationToken"></param>
+  /// <returns></returns>
+  Task<string> EncryptAsync(string filePath, string publicKey, CancellationToken cancellationToken = default);
+
+  /// <summary>
+  /// Decrypt a file.
+  /// </summary>
+  /// <param name="filePath"></param>
+  /// <param name="cancellationToken"></param>
+  /// <returns></returns>
+  Task<string> DecryptAsync(string filePath, CancellationToken cancellationToken = default);
 }

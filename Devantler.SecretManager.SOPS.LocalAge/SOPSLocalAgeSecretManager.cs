@@ -52,6 +52,20 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   }
 
   /// <summary>
+  /// Decrypt a file with an Age private key.
+  /// </summary>
+  /// <param name="path"></param>
+  /// <param name="cancellationToken"></param>
+  /// <returns></returns>
+  /// <exception cref="SecretManagerException"></exception>
+  public async Task<string> DecryptAsync(string path, CancellationToken cancellationToken = default)
+  {
+    string[] args = ["decrypt", path];
+    var (exitCode, message) = await SOPSCLI.SOPS.RunAsync(args, cancellationToken: cancellationToken).ConfigureAwait(false);
+    return exitCode != 0 ? throw new SecretManagerException(message) : message;
+  }
+
+  /// <summary>
   /// Delete an Age key.
   /// </summary>
   /// <param name="key"></param>
@@ -63,9 +77,9 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
     string fileContents = await File.ReadAllTextAsync(_sopsAgeKeyFilePath, cancellationToken).ConfigureAwait(false);
     if (fileContents.Contains(key.ToString(), StringComparison.Ordinal))
     {
+      fileContents = fileContents.Replace(key.ToString() + Environment.NewLine, "", StringComparison.Ordinal);
       fileContents = fileContents.Replace(key.ToString(), "", StringComparison.Ordinal);
-      if (fileContents.EndsWith(Environment.NewLine, StringComparison.Ordinal))
-        fileContents = fileContents[..^Environment.NewLine.Length];
+      fileContents = fileContents.TrimEnd() + Environment.NewLine;
       await File.WriteAllTextAsync(_sopsAgeKeyFilePath, fileContents, cancellationToken).ConfigureAwait(false);
     }
 
@@ -104,6 +118,20 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
     await File.WriteAllTextAsync(_sopsAgeKeyFilePath, fileContents, cancellationToken).ConfigureAwait(false);
 
     return key;
+  }
+
+  /// <summary>
+  /// Encrypt a file with an Age public key.
+  /// </summary>
+  /// <param name="publicKey"></param>
+  /// <param name="path"></param>
+  /// <param name="cancellationToken"></param>
+  /// <returns></returns>
+  public async Task<string> EncryptAsync(string path, string publicKey, CancellationToken cancellationToken = default)
+  {
+    string[] args = ["encrypt", "--age", publicKey, path];
+    var (exitCode, message) = await SOPSCLI.SOPS.RunAsync(args, cancellationToken: cancellationToken).ConfigureAwait(false);
+    return exitCode != 0 ? throw new SecretManagerException(message) : message;
   }
 
   /// <summary>
