@@ -68,7 +68,7 @@ public interface ISecretManager<T> where T : IKey
   /// <param name="publicKey"></param>
   /// <param name="cancellationToken"></param>
   /// <returns></returns>
-  Task<string> EncryptAsync(string filePath, string publicKey, CancellationToken cancellationToken = default);
+  Task<string> EncryptAsync(string filePath, string? publicKey, CancellationToken cancellationToken = default);
 
   /// <summary>
   /// Decrypt a file.

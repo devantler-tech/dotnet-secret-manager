@@ -127,10 +127,18 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   /// <param name="path"></param>
   /// <param name="cancellationToken"></param>
   /// <returns></returns>
-  public async Task<string> EncryptAsync(string path, string publicKey, CancellationToken cancellationToken = default)
+  public async Task<string> EncryptAsync(string path, string? publicKey, CancellationToken cancellationToken = default)
   {
-    string[] args = ["encrypt", "--age", publicKey, path];
-    var (exitCode, message) = await SOPSCLI.SOPS.RunAsync(args, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+    List<string> args = ["encrypt"];
+    if (!string.IsNullOrEmpty(publicKey))
+    {
+      args.Add("--age");
+      args.Add(publicKey);
+    }
+    args.Add(path);
+
+    var (exitCode, message) = await SOPSCLI.SOPS.RunAsync([.. args], cancellationToken: cancellationToken).ConfigureAwait(false);
     return exitCode != 0 ? throw new SecretManagerException(message) : message;
   }
 
