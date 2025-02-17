@@ -120,6 +120,13 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
     return key;
   }
 
+  /// <inheritdoc/>
+  public Task EditAsync(string filePath, CancellationToken cancellationToken = default)
+  {
+    List<string> args = ["edit", filePath];
+    return SOPSCLI.SOPS.RunAsync([.. args], cancellationToken: cancellationToken);
+  }
+
   /// <summary>
   /// Encrypt a file with an Age public key.
   /// </summary>
