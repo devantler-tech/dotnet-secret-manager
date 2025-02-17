@@ -77,4 +77,12 @@ public interface ISecretManager<T> where T : IKey
   /// <param name="cancellationToken"></param>
   /// <returns></returns>
   Task<string> DecryptAsync(string filePath, CancellationToken cancellationToken = default);
+
+  /// <summary>
+  /// Edit a file.
+  /// </summary>
+  /// <param name="filePath"></param>
+  /// <param name="cancellationToken"></param>
+  /// <returns></returns>
+  Task EditAsync(string filePath, CancellationToken cancellationToken = default);
 }
