@@ -25,7 +25,7 @@ public class GetSOPSConfigAsyncTests
       [
         new SOPSConfigCreationRule
         {
-          PathRegex = ".sops.yaml",
+          PathRegex = @"^.+\.enc\.ya?ml$",
           EncryptedRegex = "^(data|stringData)$",
           Age = $"public-key,{Environment.NewLine}public-key"
         }

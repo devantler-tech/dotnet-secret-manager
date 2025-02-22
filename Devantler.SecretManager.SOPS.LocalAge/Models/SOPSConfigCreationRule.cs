@@ -16,7 +16,7 @@ public class SOPSConfigCreationRule
   /// <summary>
   /// The encrypted regex for the fields that is managed by this rule.
   /// </summary>
-  public string EncryptedRegex { get; set; } = "^(data | stringData)$";
+  public string EncryptedRegex { get; set; } = "^(data|stringData)$";
 
   /// <summary>
   /// The public keys that can manage the files that is managed by this rule.
