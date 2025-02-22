@@ -1,5 +1,5 @@
 ﻿creation_rules:
-- path_regex: .sops.yaml
+- path_regex: ^.+\.enc\.ya?ml$
   encrypted_regex: ^(data|stringData)$
   age: |-
     public-key,

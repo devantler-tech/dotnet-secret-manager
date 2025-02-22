@@ -25,7 +25,7 @@ public class CreateSOPSConfigAsyncTests
       [
         new SOPSConfigCreationRule
         {
-          PathRegex = ".sops.yaml",
+          PathRegex = @"^.+\.enc\.ya?ml$",
           EncryptedRegex = "^(data|stringData)$",
           Age = $"public-key,{Environment.NewLine}public-key"
         }
@@ -57,7 +57,7 @@ public class CreateSOPSConfigAsyncTests
       [
         new SOPSConfigCreationRule
         {
-          PathRegex = ".sops.yaml",
+          PathRegex = @"^.+\.enc\.ya?ml$",
           EncryptedRegex = "^(data|stringData)$",
           Age = $"public-key,{Environment.NewLine}public-key"
         }
@@ -69,7 +69,7 @@ public class CreateSOPSConfigAsyncTests
     string configFromFile = await File.ReadAllTextAsync(configPath);
     sopsConfig.CreationRules.Add(new SOPSConfigCreationRule
     {
-      PathRegex = ".sops.yaml",
+      PathRegex = @"^.+\.enc\.ya?ml$",
       EncryptedRegex = "^(data|stringData)$",
       Age = $"public-key,{Environment.NewLine}public-key"
     });
@@ -100,7 +100,7 @@ public class CreateSOPSConfigAsyncTests
       [
         new SOPSConfigCreationRule
         {
-          PathRegex = ".sops.yaml",
+          PathRegex = @"^.+\.enc\.ya?ml$",
           EncryptedRegex = "^(data|stringData)$",
           Age = $"public-key,{Environment.NewLine}public-key"
         }
