@@ -54,13 +54,13 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   /// <summary>
   /// Decrypt a file with an Age private key.
   /// </summary>
-  /// <param name="path"></param>
+  /// <param name="filePath"></param>
   /// <param name="cancellationToken"></param>
   /// <returns></returns>
   /// <exception cref="SecretManagerException"></exception>
-  public async Task<string> DecryptAsync(string path, CancellationToken cancellationToken = default)
+  public async Task<string> DecryptAsync(string filePath, CancellationToken cancellationToken = default)
   {
-    string[] args = ["decrypt", path];
+    string[] args = ["decrypt", filePath];
     var (exitCode, message) = await SOPSCLI.SOPS.RunAsync(args, cancellationToken: cancellationToken).ConfigureAwait(false);
     return exitCode != 0 ? throw new SecretManagerException(message) : message;
   }
@@ -73,6 +73,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   /// <returns></returns>
   public async Task<AgeKey> DeleteKeyAsync(AgeKey key, CancellationToken cancellationToken = default)
   {
+    ArgumentNullException.ThrowIfNull(key, nameof(key));
     // Delete the key from the file.
     string fileContents = await File.ReadAllTextAsync(_sopsAgeKeyFilePath, cancellationToken).ConfigureAwait(false);
     if (fileContents.Contains(key.ToString(), StringComparison.Ordinal))
@@ -131,19 +132,18 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   /// Encrypt a file with an Age public key.
   /// </summary>
   /// <param name="publicKey"></param>
-  /// <param name="path"></param>
+  /// <param name="filePath"></param>
   /// <param name="cancellationToken"></param>
   /// <returns></returns>
-  public async Task<string> EncryptAsync(string path, string? publicKey, CancellationToken cancellationToken = default)
+  public async Task<string> EncryptAsync(string filePath, string? publicKey, CancellationToken cancellationToken = default)
   {
-
     List<string> args = ["encrypt"];
     if (!string.IsNullOrEmpty(publicKey))
     {
       args.Add("--age");
       args.Add(publicKey);
     }
-    args.Add(path);
+    args.Add(filePath);
 
     var (exitCode, message) = await SOPSCLI.SOPS.RunAsync([.. args], cancellationToken: cancellationToken).ConfigureAwait(false);
     return exitCode != 0 ? throw new SecretManagerException(message) : message;
@@ -187,6 +187,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   /// <returns></returns>
   public async Task<AgeKey> ImportKeyAsync(AgeKey key, CancellationToken cancellationToken = default)
   {
+    ArgumentNullException.ThrowIfNull(key, nameof(key));
     // Create the directory if it does not exist.
     string? directory = Path.GetDirectoryName(_sopsAgeKeyFilePath);
     if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))

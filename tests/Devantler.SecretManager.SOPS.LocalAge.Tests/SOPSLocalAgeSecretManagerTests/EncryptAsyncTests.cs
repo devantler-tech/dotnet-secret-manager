@@ -22,7 +22,7 @@ public class EncryptAsyncTests
         AGE-SECRET-KEY-1VZQ
     """;
     string filePath = Path.GetTempPath() + "encrypt-async-test.yaml";
-    File.WriteAllText(filePath, plainText);
+    await File.WriteAllTextAsync(filePath, plainText);
 
     // Act
     string encryptedText = await _secretManager.EncryptAsync(filePath, key.PublicKey);

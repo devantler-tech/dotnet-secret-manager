@@ -6,7 +6,7 @@ namespace Devantler.SecretManager.SOPS.LocalAge.Utils;
 /// <summary>
 /// Helper class to access and manipulate the SOPS Age key file.
 /// </summary>
-public class SOPSAgeKeyFileHelper
+public static class SOPSAgeKeyFileHelper
 {
 
   /// <summary>

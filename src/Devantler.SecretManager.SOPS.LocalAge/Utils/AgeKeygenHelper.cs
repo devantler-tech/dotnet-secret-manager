@@ -7,7 +7,7 @@ namespace Devantler.SecretManager.SOPS.LocalAge.Utils;
 /// <summary>
 /// Helper class to run common agekeygen commands.
 /// </summary>
-public class AgeKeygenHelper
+public static class AgeKeygenHelper
 {
   /// <summary>
   /// Create a new Age key.
