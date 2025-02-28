@@ -22,15 +22,15 @@ public class EditAsyncTests
         AGE-SECRET-KEY-1VZQ
     """;
     string filePath = Path.GetTempPath() + "edit-async-test.yaml";
-    File.WriteAllText(filePath, plainText);
+    await File.WriteAllTextAsync(filePath, plainText);
 
     // Act
     string encryptedText = await _secretManager.EncryptAsync(filePath, key.PublicKey);
-    async Task task() => await _secretManager.EditAsync(filePath);
+    async Task task() => await _secretManager.EditAsync(filePath).ConfigureAwait(false);
 
     // Assert
     Assert.NotEqual(plainText, encryptedText);
-    var exception = await Record.ExceptionAsync(async () => await Task.WhenAny(task(), Task.Delay(5000)));
+    var exception = await Record.ExceptionAsync(async () => await Task.WhenAny(task(), Task.Delay(5000)).ConfigureAwait(false));
     Assert.Null(exception);
 
     // Cleanup

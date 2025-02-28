@@ -19,11 +19,11 @@ public class DecryptAsyncTests
     var key = await _secretManager.CreateKeyAsync();
     string plainText = "secret: AGE-SECRET-KEY-1VZQ";
     string filePath = Path.GetTempPath() + "decrypt-async-test.yaml";
-    File.WriteAllText(filePath, plainText);
+    await File.WriteAllTextAsync(filePath, plainText);
 
     // Act
     string encryptedText = await _secretManager.EncryptAsync(filePath, key.PublicKey);
-    File.WriteAllText(filePath, encryptedText);
+    await File.WriteAllTextAsync(filePath, encryptedText);
     string decryptedText = await _secretManager.DecryptAsync(filePath);
 
     // Assert
