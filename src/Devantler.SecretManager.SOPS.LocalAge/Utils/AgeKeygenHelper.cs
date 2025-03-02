@@ -24,7 +24,7 @@ public static class AgeKeygenHelper
       cancellationToken: cancellationToken).ConfigureAwait(false);
     if (exitCode != 0)
       throw new InvalidOperationException($"Failed to generate key: {output}");
-    string[] lines = output.Split(Environment.NewLine);
+    string[] lines = output.Split("\n");
     var createdAt = DateTime.Parse(lines[0].Split(" ")[2], CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
     string publicKey = lines[1].Split(" ")[3];
     string privateKey = lines[2];
