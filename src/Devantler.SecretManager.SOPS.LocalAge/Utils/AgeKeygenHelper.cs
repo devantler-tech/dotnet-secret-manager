@@ -20,7 +20,6 @@ public static class AgeKeygenHelper
     var (exitCode, output) = await AgeKeygen.RunAsync(
       [],
       silent: true,
-      includeStdErr: false,
       cancellationToken: cancellationToken).ConfigureAwait(false);
     if (exitCode != 0)
       throw new InvalidOperationException($"Failed to generate key: {output}");
