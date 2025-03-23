@@ -125,7 +125,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   public async Task EditAsync(string filePath, CancellationToken cancellationToken = default)
   {
     List<string> args = ["edit", filePath];
-    await SOPSCLI.SOPS.RunAsync([.. args], cancellationToken: cancellationToken);
+    await SOPSCLI.SOPS.RunAsync([.. args], cancellationToken: cancellationToken).ConfigureAwait(false);
   }
 
   /// <summary>
