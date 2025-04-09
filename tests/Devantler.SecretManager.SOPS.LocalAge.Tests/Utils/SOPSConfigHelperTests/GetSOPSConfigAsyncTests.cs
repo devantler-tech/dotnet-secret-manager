@@ -6,7 +6,6 @@ namespace Devantler.SecretManager.SOPS.LocalAge.Tests.Utils.SOPSConfigHelperTest
 /// <summary>
 /// Tests for <see cref="SOPSConfigHelper.GetSOPSConfigAsync(string, CancellationToken)"/>.
 /// </summary>
-[Collection("SOPSLocalAgeSecretManager")]
 public class GetSOPSConfigAsyncTests
 {
   readonly SOPSConfigHelper _sopsConfigHelper = new();
