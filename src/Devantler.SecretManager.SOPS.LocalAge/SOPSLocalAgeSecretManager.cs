@@ -95,13 +95,21 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   /// <returns></returns>
   public async Task<AgeKey> DeleteKeyAsync(string publicKey, CancellationToken cancellationToken = default)
   {
-    // Get the contents of the file.
-    string fileContents = await File.ReadAllTextAsync(_sopsAgeKeyFilePath, cancellationToken).ConfigureAwait(false);
+    // Lock the file for exclusive access
+    using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+    // Get the contents of the file
+    using var reader = new StreamReader(fileStream);
+    string fileContents = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
 
     // Find the line number with the public key
-    string[] lines = fileContents.Split(Environment.NewLine);
+    string[] lines = fileContents.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
     int lineNumber = Array.IndexOf(lines, "# public key: " + publicKey);
-    //Get the line above and below the public key
+
+    // Validate the line number and surrounding lines
+    if (lineNumber <= 0 || lineNumber + 1 >= lines.Length)
+      throw new SecretManagerException("The public key was not found or the file format is invalid.");
+
+    // Get the line above and below the public key
     string createdAtLine = lines[lineNumber - 1];
     string publicKeyLine = lines[lineNumber];
     string privateKeyLine = lines[lineNumber + 1];
@@ -116,7 +124,14 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
     fileContents = fileContents.Replace(rawKey, "", StringComparison.Ordinal);
     if (fileContents.EndsWith(Environment.NewLine, StringComparison.Ordinal))
       fileContents = fileContents[..^Environment.NewLine.Length];
-    await File.WriteAllTextAsync(_sopsAgeKeyFilePath, fileContents, cancellationToken).ConfigureAwait(false);
+
+    // Reset the file stream position and truncate the file
+    fileStream.SetLength(0);
+    fileStream.Position = 0;
+
+    // Write the updated contents back to the file
+    using var writer = new StreamWriter(fileStream);
+    await writer.WriteAsync(fileContents).ConfigureAwait(false);
 
     return key;
   }
