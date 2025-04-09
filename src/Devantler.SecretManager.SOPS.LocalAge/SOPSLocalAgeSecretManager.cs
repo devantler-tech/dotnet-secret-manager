@@ -102,8 +102,12 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
     string fileContents = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
 
     // Find the line number with the public key
-    string[] lines = fileContents.Split(Environment.NewLine);
+    string[] lines = fileContents.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
     int lineNumber = Array.IndexOf(lines, "# public key: " + publicKey);
+
+    // Validate the line number and surrounding lines
+    if (lineNumber <= 0 || lineNumber + 1 >= lines.Length)
+      throw new SecretManagerException("The public key was not found or the file format is invalid.");
 
     // Get the line above and below the public key
     string createdAtLine = lines[lineNumber - 1];
