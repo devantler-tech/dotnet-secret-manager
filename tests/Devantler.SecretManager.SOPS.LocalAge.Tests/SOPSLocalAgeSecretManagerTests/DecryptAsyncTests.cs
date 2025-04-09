@@ -3,7 +3,6 @@ namespace Devantler.SecretManager.SOPS.LocalAge.Tests.SOPSLocalAgeSecretManagerT
 /// <summary>
 /// Tests for <see cref="SOPSLocalAgeSecretManager.DecryptAsync(string, CancellationToken)"/>.
 /// </summary>
-[Collection("SOPSLocalAgeSecretManager")]
 public class DecryptAsyncTests
 {
   readonly SOPSLocalAgeSecretManager _secretManager = new();

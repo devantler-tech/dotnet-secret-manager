@@ -1,4 +1,5 @@
 using Devantler.Keys.Age;
+using Devantler.Commons.Utils;
 using Devantler.SecretManager.Core;
 using Devantler.SecretManager.SOPS.LocalAge.Utils;
 
@@ -37,16 +38,21 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
     if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
       _ = Directory.CreateDirectory(directory);
 
-    // Create the file if it does not exist.
-    if (!File.Exists(_sopsAgeKeyFilePath))
+    await FileHelper.RetryFileAccessAsync(async () =>
     {
-      using var fs = File.Create(_sopsAgeKeyFilePath);
-    }
+      using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+      // Read the file contents.
+      using var reader = new StreamReader(fileStream);
+      string fileContents = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
 
-    // Append the key to the file if it does not exist.
-    string fileContents = await File.ReadAllTextAsync(_sopsAgeKeyFilePath, cancellationToken).ConfigureAwait(false);
-    if (!fileContents.Contains(ageKey.ToString(), StringComparison.Ordinal))
-      await File.AppendAllTextAsync(_sopsAgeKeyFilePath, ageKey.ToString() + Environment.NewLine, cancellationToken).ConfigureAwait(false);
+      // Append the key to the file if it does not exist.
+      if (!fileContents.Contains(ageKey.ToString(), StringComparison.Ordinal))
+      {
+        fileStream.Seek(0, SeekOrigin.End);
+        using var writer = new StreamWriter(fileStream);
+        await writer.WriteLineAsync(ageKey.ToString()).ConfigureAwait(false);
+      }
+    }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
     return ageKey;
   }
@@ -74,15 +80,26 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   public async Task<AgeKey> DeleteKeyAsync(AgeKey key, CancellationToken cancellationToken = default)
   {
     ArgumentNullException.ThrowIfNull(key, nameof(key));
-    // Delete the key from the file.
-    string fileContents = await File.ReadAllTextAsync(_sopsAgeKeyFilePath, cancellationToken).ConfigureAwait(false);
-    if (fileContents.Contains(key.ToString(), StringComparison.Ordinal))
+
+    await FileHelper.RetryFileAccessAsync(async () =>
     {
-      fileContents = fileContents.Replace(key.ToString() + Environment.NewLine, "", StringComparison.Ordinal);
-      fileContents = fileContents.Replace(key.ToString(), "", StringComparison.Ordinal);
-      fileContents = fileContents.TrimEnd() + Environment.NewLine;
-      await File.WriteAllTextAsync(_sopsAgeKeyFilePath, fileContents, cancellationToken).ConfigureAwait(false);
-    }
+      using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+      // Read the file contents.
+      using var reader = new StreamReader(fileStream);
+      string fileContents = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
+
+      if (fileContents.Contains(key.ToString(), StringComparison.Ordinal))
+      {
+        fileContents = fileContents.Replace(key.ToString() + Environment.NewLine, "", StringComparison.Ordinal);
+        fileContents = fileContents.Replace(key.ToString(), "", StringComparison.Ordinal);
+        fileContents = fileContents.TrimEnd() + Environment.NewLine;
+
+        // Write the updated contents back to the file.
+        fileStream.SetLength(0);
+        using var writer = new StreamWriter(fileStream);
+        await writer.WriteAsync(fileContents).ConfigureAwait(false);
+      }
+    }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
     return key;
   }
@@ -95,45 +112,43 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   /// <returns></returns>
   public async Task<AgeKey> DeleteKeyAsync(string publicKey, CancellationToken cancellationToken = default)
   {
-    // Lock the file for exclusive access
-    using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
-    // Get the contents of the file
-    using var reader = new StreamReader(fileStream);
-    string fileContents = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
+    AgeKey? key = null;
 
-    // Find the line number with the public key
-    string[] lines = fileContents.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
-    int lineNumber = Array.IndexOf(lines, "# public key: " + publicKey);
+    await FileHelper.RetryFileAccessAsync(async () =>
+    {
+      using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+      // Read the file contents.
+      using var reader = new StreamReader(fileStream);
+      string fileContents = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
 
-    // Validate the line number and surrounding lines
-    if (lineNumber <= 0 || lineNumber + 1 >= lines.Length)
-      throw new SecretManagerException("The public key was not found or the file format is invalid.");
+      // Find the line number with the public key
+      string[] lines = fileContents.Split(Environment.NewLine);
+      int lineNumber = Array.IndexOf(lines, "# public key: " + publicKey);
+      if (lineNumber == -1)
+        throw new SecretManagerException("The key does not exist in the key file.");
 
-    // Get the line above and below the public key
-    string createdAtLine = lines[lineNumber - 1];
-    string publicKeyLine = lines[lineNumber];
-    string privateKeyLine = lines[lineNumber + 1];
+      // Get the line above and below the public key
+      string createdAtLine = lines[lineNumber - 1];
+      string publicKeyLine = lines[lineNumber];
+      string privateKeyLine = lines[lineNumber + 1];
 
-    // Put the lines back together
-    string rawKey = createdAtLine + Environment.NewLine + publicKeyLine + Environment.NewLine + privateKeyLine;
+      // Put the lines back together
+      string rawKey = createdAtLine + Environment.NewLine + publicKeyLine + Environment.NewLine + privateKeyLine;
 
-    // Parse the key
-    var key = new AgeKey(rawKey);
+      // Parse the key
+      key = new AgeKey(rawKey);
 
-    // Remove the key from the file including the new line characters
-    fileContents = fileContents.Replace(rawKey, "", StringComparison.Ordinal);
-    if (fileContents.EndsWith(Environment.NewLine, StringComparison.Ordinal))
-      fileContents = fileContents[..^Environment.NewLine.Length];
+      // Remove the key from the file including the new line characters
+      fileContents = fileContents.Replace(rawKey, "", StringComparison.Ordinal);
+      fileContents = fileContents.TrimEnd() + Environment.NewLine;
 
-    // Reset the file stream position and truncate the file
-    fileStream.SetLength(0);
-    fileStream.Position = 0;
+      // Write the updated contents back to the file
+      fileStream.SetLength(0);
+      using var writer = new StreamWriter(fileStream);
+      await writer.WriteAsync(fileContents).ConfigureAwait(false);
+    }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-    // Write the updated contents back to the file
-    using var writer = new StreamWriter(fileStream);
-    await writer.WriteAsync(fileContents).ConfigureAwait(false);
-
-    return key;
+    return key ?? throw new SecretManagerException("Failed to delete the key due to file access issues.");
   }
 
   /// <inheritdoc/>
@@ -173,25 +188,36 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   /// <exception cref="SecretManagerException"></exception>
   public async Task<AgeKey> GetKeyAsync(string publicKey, CancellationToken cancellationToken = default)
   {
-    // Get the contents of the file.
-    string fileContents = await File.ReadAllTextAsync(_sopsAgeKeyFilePath, cancellationToken).ConfigureAwait(false);
+    AgeKey? key = null;
 
-    if (!fileContents.Contains("# public key: " + publicKey, StringComparison.Ordinal))
-      throw new SecretManagerException("the key does not exist in the key file.");
+    await FileHelper.RetryFileAccessAsync(async () =>
+    {
+      using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
+      using var reader = new StreamReader(fileStream);
 
-    // Find the line number with the public key
-    string[] lines = fileContents.Split(Environment.NewLine);
-    int lineNumber = Array.IndexOf(lines, "# public key: " + publicKey);
-    //Get the line above and below the public key
-    string createdAtLine = lines[lineNumber - 1];
-    string publicKeyLine = lines[lineNumber];
-    string privateKeyLine = lines[lineNumber + 1];
+      // Get the contents of the file.
+      string fileContents = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
 
-    // Put the lines back together
-    string rawKey = createdAtLine + Environment.NewLine + publicKeyLine + Environment.NewLine + privateKeyLine;
+      if (!fileContents.Contains("# public key: " + publicKey, StringComparison.Ordinal))
+        throw new SecretManagerException("The key does not exist in the key file.");
 
-    // Parse the key
-    return new AgeKey(rawKey);
+      // Find the line number with the public key
+      string[] lines = fileContents.Split(Environment.NewLine);
+      int lineNumber = Array.IndexOf(lines, "# public key: " + publicKey);
+
+      // Get the line above and below the public key
+      string createdAtLine = lines[lineNumber - 1];
+      string publicKeyLine = lines[lineNumber];
+      string privateKeyLine = lines[lineNumber + 1];
+
+      // Put the lines back together
+      string rawKey = createdAtLine + Environment.NewLine + publicKeyLine + Environment.NewLine + privateKeyLine;
+
+      // Parse the key
+      key = new AgeKey(rawKey);
+    }, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+    return key ?? throw new SecretManagerException("Failed to retrieve the key due to file access issues.");
   }
 
   /// <summary>
@@ -203,21 +229,27 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   public async Task<AgeKey> ImportKeyAsync(AgeKey key, CancellationToken cancellationToken = default)
   {
     ArgumentNullException.ThrowIfNull(key, nameof(key));
+
     // Create the directory if it does not exist.
     string? directory = Path.GetDirectoryName(_sopsAgeKeyFilePath);
     if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
       _ = Directory.CreateDirectory(directory);
 
-    // Create the file if it does not exist.
-    if (!File.Exists(_sopsAgeKeyFilePath))
+    await FileHelper.RetryFileAccessAsync(async () =>
     {
-      using var fs = File.Create(_sopsAgeKeyFilePath);
-    }
+      using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+      // Read the file contents.
+      using var reader = new StreamReader(fileStream);
+      string fileContents = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
 
-    // Append the key to the file if it does not exist.
-    string fileContents = await File.ReadAllTextAsync(_sopsAgeKeyFilePath, cancellationToken).ConfigureAwait(false);
-    if (!fileContents.Contains(key.ToString(), StringComparison.Ordinal))
-      await File.AppendAllTextAsync(_sopsAgeKeyFilePath, key.ToString(), cancellationToken).ConfigureAwait(false);
+      // Append the key to the file if it does not exist.
+      if (!fileContents.Contains(key.ToString(), StringComparison.Ordinal))
+      {
+        fileStream.Seek(0, SeekOrigin.End);
+        using var writer = new StreamWriter(fileStream);
+        await writer.WriteLineAsync(key.ToString()).ConfigureAwait(false);
+      }
+    }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
     return key;
   }
@@ -231,11 +263,21 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   /// <exception cref="NotImplementedException"></exception>
   public async Task<bool> KeyExistsAsync(string publicKey, CancellationToken cancellationToken = default)
   {
-    // Get the contents of the file.
-    string fileContents = await File.ReadAllTextAsync(_sopsAgeKeyFilePath, cancellationToken).ConfigureAwait(false);
+    bool keyExists = false;
 
-    // Check if the public key exists in the file.
-    return fileContents.Contains("# public key: " + publicKey, StringComparison.Ordinal);
+    await FileHelper.RetryFileAccessAsync(async () =>
+    {
+      using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
+      using var reader = new StreamReader(fileStream);
+
+      // Get the contents of the file.
+      string fileContents = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
+
+      // Check if the public key exists in the file.
+      keyExists = fileContents.Contains("# public key: " + publicKey, StringComparison.Ordinal);
+    }, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+    return keyExists;
   }
 
   /// <summary>
@@ -246,29 +288,36 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   /// <exception cref="NotImplementedException"></exception>
   public async Task<IEnumerable<AgeKey>> ListKeysAsync(CancellationToken cancellationToken = default)
   {
+    var keys = new List<AgeKey>();
+
     if (!File.Exists(_sopsAgeKeyFilePath))
       return [];
 
-    string fileContents = await File.ReadAllTextAsync(_sopsAgeKeyFilePath, cancellationToken).ConfigureAwait(false);
-
-    // Find the line number with the public key
-    string[] lines = fileContents.Split(Environment.NewLine);
-    List<AgeKey> keys = [];
-    for (int i = 0; i < lines.Length; i++)
+    await FileHelper.RetryFileAccessAsync(async () =>
     {
-      if (lines[i].StartsWith("# created: ", StringComparison.Ordinal))
+      using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
+      using var reader = new StreamReader(fileStream);
+
+      string fileContents = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
+
+      // Find the line number with the public key
+      string[] lines = fileContents.Split(Environment.NewLine);
+      for (int i = 0; i < lines.Length; i++)
       {
-        string createdAtLine = lines[i];
-        string publicKeyLine = lines[i + 1];
-        string privateKeyLine = lines[i + 2];
+        if (lines[i].StartsWith("# created: ", StringComparison.Ordinal))
+        {
+          string createdAtLine = lines[i];
+          string publicKeyLine = lines[i + 1];
+          string privateKeyLine = lines[i + 2];
 
-        // Put the lines back together
-        string rawKey = createdAtLine + Environment.NewLine + publicKeyLine + Environment.NewLine + privateKeyLine;
+          // Put the lines back together
+          string rawKey = createdAtLine + Environment.NewLine + publicKeyLine + Environment.NewLine + privateKeyLine;
 
-        // Parse the key
-        keys.Add(new AgeKey(rawKey));
+          // Parse the key
+          keys.Add(new AgeKey(rawKey));
+        }
       }
-    }
+    }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
     return keys;
   }
