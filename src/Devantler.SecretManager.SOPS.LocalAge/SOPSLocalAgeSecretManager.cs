@@ -1,4 +1,5 @@
 using Devantler.Keys.Age;
+using Devantler.Commons.Utils;
 using Devantler.SecretManager.Core;
 using Devantler.SecretManager.SOPS.LocalAge.Utils;
 
@@ -37,7 +38,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
     if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
       _ = Directory.CreateDirectory(directory);
 
-    await RetryFileAccessAsync(async () =>
+    await FileHelper.RetryFileAccessAsync(async () =>
     {
       using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
       // Read the file contents.
@@ -51,7 +52,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
         using var writer = new StreamWriter(fileStream);
         await writer.WriteLineAsync(ageKey.ToString()).ConfigureAwait(false);
       }
-    }, cancellationToken).ConfigureAwait(false);
+    }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
     return ageKey;
   }
@@ -80,7 +81,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   {
     ArgumentNullException.ThrowIfNull(key, nameof(key));
 
-    await RetryFileAccessAsync(async () =>
+    await FileHelper.RetryFileAccessAsync(async () =>
     {
       using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
       // Read the file contents.
@@ -98,7 +99,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
         using var writer = new StreamWriter(fileStream);
         await writer.WriteAsync(fileContents).ConfigureAwait(false);
       }
-    }, cancellationToken).ConfigureAwait(false);
+    }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
     return key;
   }
@@ -113,7 +114,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   {
     AgeKey? key = null;
 
-    await RetryFileAccessAsync(async () =>
+    await FileHelper.RetryFileAccessAsync(async () =>
     {
       using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
       // Read the file contents.
@@ -145,7 +146,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
       fileStream.SetLength(0);
       using var writer = new StreamWriter(fileStream);
       await writer.WriteAsync(fileContents).ConfigureAwait(false);
-    }, cancellationToken).ConfigureAwait(false);
+    }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
     return key ?? throw new SecretManagerException("Failed to delete the key due to file access issues.");
   }
@@ -189,7 +190,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   {
     AgeKey? key = null;
 
-    await RetryFileAccessAsync(async () =>
+    await FileHelper.RetryFileAccessAsync(async () =>
     {
       using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
       using var reader = new StreamReader(fileStream);
@@ -214,7 +215,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
 
       // Parse the key
       key = new AgeKey(rawKey);
-    }, cancellationToken).ConfigureAwait(false);
+    }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
     return key ?? throw new SecretManagerException("Failed to retrieve the key due to file access issues.");
   }
@@ -234,7 +235,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
     if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
       _ = Directory.CreateDirectory(directory);
 
-    await RetryFileAccessAsync(async () =>
+    await FileHelper.RetryFileAccessAsync(async () =>
     {
       using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
       // Read the file contents.
@@ -248,7 +249,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
         using var writer = new StreamWriter(fileStream);
         await writer.WriteLineAsync(key.ToString()).ConfigureAwait(false);
       }
-    }, cancellationToken).ConfigureAwait(false);
+    }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
     return key;
   }
@@ -264,7 +265,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   {
     bool keyExists = false;
 
-    await RetryFileAccessAsync(async () =>
+    await FileHelper.RetryFileAccessAsync(async () =>
     {
       using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
       using var reader = new StreamReader(fileStream);
@@ -274,7 +275,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
 
       // Check if the public key exists in the file.
       keyExists = fileContents.Contains("# public key: " + publicKey, StringComparison.Ordinal);
-    }, cancellationToken).ConfigureAwait(false);
+    }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
     return keyExists;
   }
@@ -292,7 +293,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
     if (!File.Exists(_sopsAgeKeyFilePath))
       return [];
 
-    await RetryFileAccessAsync(async () =>
+    await FileHelper.RetryFileAccessAsync(async () =>
     {
       using var fileStream = new FileStream(_sopsAgeKeyFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
       using var reader = new StreamReader(fileStream);
@@ -316,32 +317,8 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
           keys.Add(new AgeKey(rawKey));
         }
       }
-    }, cancellationToken).ConfigureAwait(false);
+    }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
     return keys;
-  }
-
-  // TODO: Move to Devantler.Commons.Utils
-  private static async Task RetryFileAccessAsync(Func<Task> fileAccessAction, CancellationToken cancellationToken)
-  {
-    using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
-    using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
-
-    while (true)
-    {
-      try
-      {
-        await fileAccessAction().ConfigureAwait(false);
-        break; // Exit the loop if the file access succeeds.
-      }
-      catch (IOException)
-      {
-        if (timeoutCts.Token.IsCancellationRequested)
-          throw new TimeoutException("Failed to access the file within the timeout period.");
-
-        // Wait and retry if the file is locked.
-        await Task.Delay(100, linkedCts.Token).ConfigureAwait(false);
-      }
-    }
   }
 }
