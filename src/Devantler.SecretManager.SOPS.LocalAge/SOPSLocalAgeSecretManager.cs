@@ -48,7 +48,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
       // Append the key to the file if it does not exist.
       if (!fileContents.Contains(ageKey.ToString(), StringComparison.Ordinal))
       {
-        fileStream.Seek(0, SeekOrigin.End);
+        _ = fileStream.Seek(0, SeekOrigin.End);
         using var writer = new StreamWriter(fileStream);
         await writer.WriteLineAsync(ageKey.ToString()).ConfigureAwait(false);
       }
@@ -155,7 +155,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   public async Task EditAsync(string filePath, CancellationToken cancellationToken = default)
   {
     List<string> args = ["edit", filePath];
-    await SOPSCLI.SOPS.RunAsync([.. args], cancellationToken: cancellationToken).ConfigureAwait(false);
+    _ = await SOPSCLI.SOPS.RunAsync([.. args], cancellationToken: cancellationToken).ConfigureAwait(false);
   }
 
   /// <summary>
@@ -245,7 +245,7 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
       // Append the key to the file if it does not exist.
       if (!fileContents.Contains(key.ToString(), StringComparison.Ordinal))
       {
-        fileStream.Seek(0, SeekOrigin.End);
+        _ = fileStream.Seek(0, SeekOrigin.End);
         using var writer = new StreamWriter(fileStream);
         await writer.WriteLineAsync(key.ToString()).ConfigureAwait(false);
       }
