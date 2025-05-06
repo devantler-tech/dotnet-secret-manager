@@ -1,5 +1,5 @@
-using Devantler.Keys.Age;
 using Devantler.Commons.Utils;
+using Devantler.Keys.Age;
 using Devantler.SecretManager.Core;
 using Devantler.SecretManager.SOPS.LocalAge.Utils;
 
@@ -67,7 +67,19 @@ public class SOPSLocalAgeSecretManager : ISecretManager<AgeKey>
   public async Task<string> DecryptAsync(string filePath, CancellationToken cancellationToken = default)
   {
     string[] args = ["decrypt", filePath];
-    var (exitCode, message) = await SOPSCLI.SOPS.RunAsync(args, cancellationToken: cancellationToken).ConfigureAwait(false);
+    int retryCount = 0;
+    int exitCode;
+    string message;
+    do
+    {
+      (exitCode, message) = await SOPSCLI.SOPS.RunAsync(args, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+      if (exitCode == 1 && message.Contains("process cannot access the file", StringComparison.OrdinalIgnoreCase))
+      {
+        retryCount++;
+        await Task.Delay(100, cancellationToken).ConfigureAwait(false);
+      }
+    } while (exitCode == 1 && message.Contains("process cannot access the file", StringComparison.OrdinalIgnoreCase) && retryCount < 3);
     return exitCode != 0 ? throw new SecretManagerException(message) : message;
   }
 
