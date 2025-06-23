@@ -1,4 +1,4 @@
-namespace Devantler.SecretManager.Core;
+namespace DevantlerTech.SecretManager.Core;
 
 /// <summary>
 /// Represents errors that occur during secret manager operations.

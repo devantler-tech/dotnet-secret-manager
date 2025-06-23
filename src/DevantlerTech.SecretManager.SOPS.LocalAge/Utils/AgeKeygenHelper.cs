@@ -1,8 +1,8 @@
 using System.Globalization;
-using Devantler.AgeCLI;
-using Devantler.Keys.Age;
+using DevantlerTech.AgeCLI;
+using DevantlerTech.Keys.Age;
 
-namespace Devantler.SecretManager.SOPS.LocalAge.Utils;
+namespace DevantlerTech.SecretManager.SOPS.LocalAge.Utils;
 
 /// <summary>
 /// Helper class to run common agekeygen commands.

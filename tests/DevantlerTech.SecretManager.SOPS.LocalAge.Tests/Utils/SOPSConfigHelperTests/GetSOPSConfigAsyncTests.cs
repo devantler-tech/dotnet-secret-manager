@@ -1,7 +1,7 @@
-using Devantler.SecretManager.SOPS.LocalAge.Models;
-using Devantler.SecretManager.SOPS.LocalAge.Utils;
+using DevantlerTech.SecretManager.SOPS.LocalAge.Models;
+using DevantlerTech.SecretManager.SOPS.LocalAge.Utils;
 
-namespace Devantler.SecretManager.SOPS.LocalAge.Tests.Utils.SOPSConfigHelperTests;
+namespace DevantlerTech.SecretManager.SOPS.LocalAge.Tests.Utils.SOPSConfigHelperTests;
 
 /// <summary>
 /// Tests for <see cref="SOPSConfigHelper.GetSOPSConfigAsync(string, CancellationToken)"/>.

@@ -1,6 +1,6 @@
-using Devantler.Keys.Age;
+using DevantlerTech.Keys.Age;
 
-namespace Devantler.SecretManager.SOPS.LocalAge.Tests.SOPSLocalAgeSecretManagerTests;
+namespace DevantlerTech.SecretManager.SOPS.LocalAge.Tests.SOPSLocalAgeSecretManagerTests;
 
 /// <summary>
 /// Tests for <see cref="SOPSLocalAgeSecretManager.DeleteKeyAsync(AgeKey, CancellationToken)"/>.

@@ -1,7 +1,7 @@
 #pragma warning disable CA2227 // Collection properties should be read only
 using System.Collections.ObjectModel;
 
-namespace Devantler.SecretManager.SOPS.LocalAge.Models;
+namespace DevantlerTech.SecretManager.SOPS.LocalAge.Models;
 
 /// <summary>
 /// Represents a .sops.yaml file.
