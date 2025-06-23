@@ -1,6 +1,6 @@
-using Devantler.Keys.Core;
+using DevantlerTech.Keys.Core;
 
-namespace Devantler.SecretManager.Core;
+namespace DevantlerTech.SecretManager.Core;
 
 /// <summary>
 /// Interface for a secret manager.

@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace Devantler.SecretManager.SOPS.LocalAge.Utils;
+namespace DevantlerTech.SecretManager.SOPS.LocalAge.Utils;
 
 
 /// <summary>

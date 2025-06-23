@@ -1,9 +1,9 @@
-namespace Devantler.SecretManager.SOPS.LocalAge.Tests.SOPSLocalAgeSecretManagerTests;
+namespace DevantlerTech.SecretManager.SOPS.LocalAge.Tests.SOPSLocalAgeSecretManagerTests;
 
 /// <summary>
 /// Tests for <see cref="SOPSLocalAgeSecretManager.EncryptAsync(string, string, CancellationToken)"/>.
 /// </summary>
-public class EditAsyncTests
+public class EncryptAsyncTests
 {
   readonly SOPSLocalAgeSecretManager _secretManager = new();
 
@@ -20,17 +20,14 @@ public class EditAsyncTests
       secret: |
         AGE-SECRET-KEY-1VZQ
     """;
-    string filePath = Path.GetTempPath() + "edit-async-test.yaml";
+    string filePath = Path.GetTempPath() + "encrypt-async-test.yaml";
     await File.WriteAllTextAsync(filePath, plainText);
 
     // Act
     string encryptedText = await _secretManager.EncryptAsync(filePath, key.PublicKey);
-    async Task task() => await _secretManager.EditAsync(filePath).ConfigureAwait(false);
 
     // Assert
     Assert.NotEqual(plainText, encryptedText);
-    var exception = await Record.ExceptionAsync(async () => await Task.WhenAny(task(), Task.Delay(5000)).ConfigureAwait(false));
-    Assert.Null(exception);
 
     // Cleanup
     _ = await _secretManager.DeleteKeyAsync(key);

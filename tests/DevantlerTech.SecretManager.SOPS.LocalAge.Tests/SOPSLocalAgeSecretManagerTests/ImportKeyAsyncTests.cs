@@ -1,7 +1,7 @@
-using Devantler.Keys.Age;
-using Devantler.SecretManager.SOPS.LocalAge.Utils;
+using DevantlerTech.Keys.Age;
+using DevantlerTech.SecretManager.SOPS.LocalAge.Utils;
 
-namespace Devantler.SecretManager.SOPS.LocalAge.Tests.SOPSLocalAgeSecretManagerTests;
+namespace DevantlerTech.SecretManager.SOPS.LocalAge.Tests.SOPSLocalAgeSecretManagerTests;
 
 /// <summary>
 /// Tests for <see cref="SOPSLocalAgeSecretManager.ImportKeyAsync(AgeKey, CancellationToken)"/>.

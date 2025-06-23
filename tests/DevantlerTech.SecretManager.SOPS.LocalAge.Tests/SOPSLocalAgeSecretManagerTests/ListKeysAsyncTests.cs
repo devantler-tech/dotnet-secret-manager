@@ -1,4 +1,4 @@
-namespace Devantler.SecretManager.SOPS.LocalAge.Tests.SOPSLocalAgeSecretManagerTests;
+namespace DevantlerTech.SecretManager.SOPS.LocalAge.Tests.SOPSLocalAgeSecretManagerTests;
 
 /// <summary>
 /// Tests for <see cref="SOPSLocalAgeSecretManager.ListKeysAsync(CancellationToken)"/>.

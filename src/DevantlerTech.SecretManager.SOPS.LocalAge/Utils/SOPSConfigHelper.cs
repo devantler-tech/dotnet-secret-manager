@@ -1,8 +1,8 @@
-using Devantler.SecretManager.SOPS.LocalAge.Models;
+using DevantlerTech.SecretManager.SOPS.LocalAge.Models;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace Devantler.SecretManager.SOPS.LocalAge.Utils;
+namespace DevantlerTech.SecretManager.SOPS.LocalAge.Utils;
 
 /// <summary>
 /// Helper class to manage SOPS configuration files.

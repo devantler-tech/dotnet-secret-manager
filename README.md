@@ -16,13 +16,13 @@ To get started, you can install the packages from NuGet.
 
 ```bash
 # For the Age key model
-dotnet add package Devantler.SecretManager.SOPS.LocalAge
+dotnet add package DevantlerTech.SecretManager.SOPS.LocalAge
 ```
 
 If you need to create a new implementation for a secret manager, you can install the core package.
 
 ```bash
-dotnet add package Devantler.Keys.Core
+dotnet add package DevantlerTech.Keys.Core
 ```
 
 ## 📝 Usage
@@ -36,7 +36,7 @@ The Local Age Secret Manager is a simple secret manager to manage Age keys on yo
 To create a new key, you can use the `CreateKeyAsync` method.
 
 ```csharp
-using Devantler.SecretManager.SOPS.LocalAge;
+using DevantlerTech.SecretManager.SOPS.LocalAge;
 
 var SecretManager = new SOPSLocalAgeSecretManager();
 
@@ -46,8 +46,8 @@ var key = await SecretManager.CreateKeyAsync();
 To delete a key, you can use the `DeleteKeyAsync` method.
 
 ```csharp
-using Devantler.Keys.Age;
-using Devantler.SecretManager.SOPS.LocalAge;
+using DevantlerTech.Keys.Age;
+using DevantlerTech.SecretManager.SOPS.LocalAge;
 
 var SecretManager = new SOPSLocalAgeSecretManager();
 
@@ -60,7 +60,7 @@ await SecretManager.DeleteKeyAsync(ageKey);
 To get an existing key, you can use the `GetKeyAsync` method.
 
 ```csharp
-using Devantler.SecretManager.SOPS.LocalAge;
+using DevantlerTech.SecretManager.SOPS.LocalAge;
 
 var SecretManager = new SOPSLocalAgeSecretManager();
 
@@ -72,8 +72,8 @@ var key = await SecretManager.GetKeyAsync("<public key>");
 To import a key, you can use the `ImportKeyAsync` method.
 
 ```csharp
-using Devantler.Keys.Age;
-using Devantler.SecretManager.SOPS.LocalAge;
+using DevantlerTech.Keys.Age;
+using DevantlerTech.SecretManager.SOPS.LocalAge;
 
 var SecretManager = new SOPSLocalAgeSecretManager();
 
@@ -87,7 +87,7 @@ var key = await SecretManager.ImportKeyAsync(ageKey);
 To check if a key exists, you can use the `KeyExistsAsync` method.
 
 ```csharp
-using Devantler.SecretManager.SOPS.LocalAge;
+using DevantlerTech.SecretManager.SOPS.LocalAge;
 
 var SecretManager = new SOPSLocalAgeSecretManager();
 
@@ -99,7 +99,7 @@ var exists = await SecretManager.KeyExistsAsync("<public key>");
 To list all keys, you can use the `ListKeysAsync` method.
 
 ```csharp
-using Devantler.SecretManager.SOPS.LocalAge;
+using DevantlerTech.SecretManager.SOPS.LocalAge;
 
 var SecretManager = new SOPSLocalAgeSecretManager();
 

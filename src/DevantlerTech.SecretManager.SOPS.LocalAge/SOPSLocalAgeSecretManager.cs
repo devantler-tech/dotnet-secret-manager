@@ -1,9 +1,9 @@
-using Devantler.Commons.Utils;
-using Devantler.Keys.Age;
-using Devantler.SecretManager.Core;
-using Devantler.SecretManager.SOPS.LocalAge.Utils;
+using DevantlerTech.Commons.Utils;
+using DevantlerTech.Keys.Age;
+using DevantlerTech.SecretManager.Core;
+using DevantlerTech.SecretManager.SOPS.LocalAge.Utils;
 
-namespace Devantler.SecretManager.SOPS.LocalAge;
+namespace DevantlerTech.SecretManager.SOPS.LocalAge;
 
 /// <summary>
 /// A local secret manager for SOPS with Age keys.
