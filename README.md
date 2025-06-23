@@ -6,31 +6,6 @@
 
 A simple .NET library to manage cryptographic keys.
 
-<details>
-  <summary>Show/hide folder structure</summary>
-
-<!-- readme-tree start -->
-```
-.
-├── .github
-│   └── workflows
-├── src
-│   ├── Devantler.SecretManager.Core
-│   └── Devantler.SecretManager.SOPS.LocalAge
-│       ├── Models
-│       └── Utils
-└── tests
-    └── Devantler.SecretManager.SOPS.LocalAge.Tests
-        ├── SOPSLocalAgeSecretManagerTests
-        └── Utils
-            └── SOPSConfigHelperTests
-
-13 directories
-```
-<!-- readme-tree end -->
-
-</details>
-
 ## Prerequisites
 
 - [.NET](https://dotnet.microsoft.com/en-us/)
